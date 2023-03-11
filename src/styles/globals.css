@@ -15,7 +15,7 @@
 
 @layer components {
   .btn-primary {
-    @apply px-16 py-2 text-white font-semibold flex items-start duration-150 bg-[#1e4fff] text-center hover:bg-[#1e4fff6b] hover:-translate-y-1 hover:scale-[1.05];
+    @apply px-16 py-2 text-white  font-semibold flex items-start duration-150 bg-[#1e4fff] text-center hover:bg-[#1e4fff6b] hover:-translate-y-1 hover:scale-[1.05];
     border-radius: 12px;
   }
   .card {
@@ -23,6 +23,18 @@
     box-shadow: 0px 12px 25px rgba(112, 58, 202, 0.25);
     border-radius: 16px;
     @apply py-8 px-5;
+  }
+
+  .label {
+    @apply text-[#525C76] text-xs font-bold;
+  }
+
+  .input {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid #eef2f6;
+    border-radius: 12px;
+    box-shadow: 0px 12px 25px rgba(112, 58, 202, 0.15);
+    @apply flex w-full px-4 py-2 mb-2 text-sm caret-[#1e4fff] focus:ring-2 ring-offset-0 focus:ring-white;
   }
 
   .centered-grid {
