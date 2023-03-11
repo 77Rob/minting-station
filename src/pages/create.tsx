@@ -48,7 +48,7 @@ const OptionCard = ({ name, description, image, href }: IOption) => {
   return (
     <div
       key={name}
-      className="card centered-grid-item flex items-center text-center flex-col"
+      className="card mb-2 md:centered-grid-item flex items-center text-center flex-col"
     >
       <img src={image} className="w-24 mb-4" />
       <h1 className="uppercase text-xl mb-2 font-semibold">{name}</h1>
@@ -66,7 +66,7 @@ const Create = () => {
       <h1 className="text-center text-3xl font-bold mt-5 mb-10">
         SELECT COLLECTION TYPE
       </h1>
-      <div className="centered-grid gap-8 max-w-7xl mx-auto ">
+      <div className="md:centered-grid gap-8 max-w-7xl mx-auto px-10">
         {options.map((option) => (
           <OptionCard {...option} />
         ))}
