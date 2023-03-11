@@ -7,11 +7,46 @@
   html {
     font-family: "Poppins", sans-serif;
     color: white;
+    position: relative;
+    min-height: 100%;
+    @apply pb-24;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply px-5 py-2 text-white font-semibold flex items-start duration-150 rounded-xl bg-[rgba(30,80,255,1)] transition-all text-center;
+    @apply px-16 py-2 text-white font-semibold flex items-start duration-150 bg-[#1e4fff] text-center hover:bg-[#1e4fff6b] hover:-translate-y-1 hover:scale-[1.05];
+    border-radius: 12px;
+  }
+  .card {
+    background: #272d37;
+    box-shadow: 0px 12px 25px rgba(112, 58, 202, 0.25);
+    border-radius: 16px;
+    @apply py-8 px-5;
+  }
+
+  .centered-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    flex: 1 1 auto;
+    counter-reset: grid;
+  }
+
+  .centered-grid-item {
+    grid-column: span 2;
+    /* Dealing with 2 orphan items */
+    /* Dealing with single orphan */
+  }
+  .centered-grid-item::after {
+    counter-increment: grid;
+  }
+  .centered-grid-item:last-child:nth-child(3n-1) {
+    grid-column-end: -2;
+  }
+  .centered-grid-item:nth-last-child(2):nth-child(3n + 1) {
+    grid-column-end: 4;
+  }
+  .centered-grid-item:last-child:nth-child(3n-2) {
+    grid-column-end: 5;
   }
 }

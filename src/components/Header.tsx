@@ -12,7 +12,7 @@ const Header = () => {
       <div className="flex items-center space-x-4">
         <ConnectButton />
         <Link href="https://www.github.com">
-          <GitHubIcon className="w-12" />
+          <GitHubIcon className="w-8 hover:scale-[1.1]" />
         </Link>
       </div>
     </header>
