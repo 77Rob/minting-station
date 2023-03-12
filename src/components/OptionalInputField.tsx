@@ -86,7 +86,7 @@ export const OptionalInputField = ({
           <input
             {...field}
             {...props}
-            className="bg-transparent w-[60%] text-center"
+            className="bg-transparent w-[60%] focus:ring-0 border-none text-center"
             disabled={!checked}
             value={checked ? field.value : ""}
             inputMode="none"
