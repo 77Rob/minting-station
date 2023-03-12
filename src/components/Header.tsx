@@ -10,7 +10,7 @@ const Header = () => {
         <LogoHeader className="w-80" />
       </Link>
       <div className="flex items-center space-x-4">
-        <ConnectButton />
+        <ConnectButton label="CONNECT WALLET" />
         <Link href="https://www.github.com">
           <GitHubIcon className="w-8 hover:scale-[1.1]" />
         </Link>
