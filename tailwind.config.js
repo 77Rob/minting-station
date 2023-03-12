@@ -17,10 +17,12 @@ module.exports = {
       },
 
       colors: {
-        primaryBg: "hsl(225, 75%, 3%)",
+        "base-300": "hsl(225, 75%, 3%)",
         "base-200": "#ffffff1a",
+        highlight: "#4D56AF",
+        "base-100": "#272d37",
       },
     },
   },
-  plugins: [],
+  plugins: [require("@tailwindcss/forms")],
 };

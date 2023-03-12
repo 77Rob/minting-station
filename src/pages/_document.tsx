@@ -6,7 +6,7 @@ export default function Document() {
     <Html lang="en">
       <Head />
       <body
-        className="bg-primaryBg bg-top bg-repeat-y color-white"
+        className="bg-base-300 bg-top bg-repeat-y color-white"
         style={{
           backgroundImage: "url('/ornament.png')",
         }}

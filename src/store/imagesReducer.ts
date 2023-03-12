@@ -1,24 +1,32 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-interface Trait {
+export interface IAttribute {
   name: string;
   value: string;
 }
 
-interface Image {
+export interface IImage {
   id: string;
   name: string;
   url: string;
-  traits?: Trait[];
+  description?: string;
+  attributes?: IAttribute[];
 }
+export type Image = {
+  id: string;
+  name: string;
+  url: string;
+  description?: string;
+  attributes?: IAttribute[];
+};
 
-interface ImagesReducerInitialState {
-  images: Image[];
+export interface IImagesReducerInitialState {
+  images: IImage[];
   metadata: any[];
 }
 
-const initialState: ImagesReducerInitialState = {
+const initialState: IImagesReducerInitialState = {
   images: [],
   metadata: [],
 };
@@ -27,22 +35,30 @@ const imagesSlice = createSlice({
   name: "images",
   initialState,
   reducers: {
-    addImages(state, action: PayloadAction<Image[]>) {
+    handleAddImages(state, action: PayloadAction<IImage[]>) {
       state.images.push(...action.payload);
     },
-    loadImages(state, action: PayloadAction<Image[]>) {
-      state.images = action.payload;
+    handleLoadImages(state, action: PayloadAction<any[]>) {
+      state.images = action.payload.map((image) => ({
+        url: image.url,
+        name: image.name,
+        id: image.fileName,
+        description: image.description || "",
+        attributes: image.attributes,
+      }));
     },
   },
 });
 
+export const { handleAddImages, handleLoadImages } = imagesSlice.actions;
+
 export const loadImages = async (dispatch: any) => {
-  console.log("loading");
-  console.log(process.env);
-  const response = await fetch(`http://localhost:5000/images`);
-  const responseData = await response.json();
-  console.log(responseData);
-  dispatch(imagesSlice.actions.addImages(responseData));
+  const response = await axios.get(
+    `http://localhost:5000/images/${localStorage.getItem("userId")}`
+  );
+  console.log(response);
+  console.log(response.data[1].fileName);
+  dispatch(handleLoadImages(response.data));
 };
 
 export const uploadImages = async (images: any, dispatch: any) => {
@@ -59,8 +75,8 @@ export const uploadImages = async (images: any, dispatch: any) => {
       userId: localStorage.getItem("userId"),
     },
   });
-  console.log(response);
+
+  dispatch(handleAddImages(response.data));
 };
 
-export const {} = imagesSlice.actions;
 export default imagesSlice.reducer;
