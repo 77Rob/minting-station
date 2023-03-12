@@ -1,12 +1,42 @@
 import { Formik, Field, Form, FormikHelpers } from "formik";
-import { useState } from "react";
-import { LabelField } from "../pages/create/images";
-import { SwitchField } from "@/components/SwitchField";
+import { forwardRef, useRef, useState } from "react";
+import SwitchField from "@/components/SwitchField";
 import { OptionalInputField } from "@/components/OptionalInputField";
+import { motion, LayoutGroup, AnimatePresence } from "framer-motion";
+
+export const LabelField = ({ label, field, form, ...props }: any) => {
+  return (
+    <div>
+      <label htmlFor={field.name} className="label">
+        {label}
+      </label>
+      <input className="input" {...field} {...props} />
+    </div>
+  );
+};
+
+const withFramerMotion = (Component: any, i: number) => {
+  return (props: any) => (
+    <motion.div
+      layout
+      viewport={{ margin: "600px" }}
+      initial={{ opacity: 0, y: -20 }}
+      whileInView={{
+        opacity: 1,
+        transition: {
+          type: "spring",
+          delay: i * 0.15,
+        },
+        y: 0,
+      }}
+    >
+      <Component {...props} />
+    </motion.div>
+  );
+};
 
 export const ContractSettings = ({ baseUri }: { baseUri: string }) => {
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
-
   type Values = {
     image?: string;
     tokenName: string;
@@ -33,7 +63,7 @@ export const ContractSettings = ({ baseUri }: { baseUri: string }) => {
   };
 
   return (
-    <div className="card w-full">
+    <div className="card w-full" id="ultimateRef">
       <Formik
         initialValues={initialValues}
         onSubmit={(
@@ -98,9 +128,11 @@ export const ContractSettings = ({ baseUri }: { baseUri: string }) => {
             component={OptionalInputField}
           />
 
-          <button
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            whileHover={{ scale: 1.02 }}
             onClick={() => setShowAdvancedOptions((curr) => !curr)}
-            className="w-full btn-primary px-3 flex hover:scale-[102%] justify-between items-center mb-4"
+            className="w-full btn-primary px-3 flex justify-between items-center mb-4"
           >
             ADVANCED OPTIONS
             {showAdvancedOptions ? (
@@ -130,16 +162,16 @@ export const ContractSettings = ({ baseUri }: { baseUri: string }) => {
                 />
               </svg>
             )}
-          </button>
+          </motion.button>
           {showAdvancedOptions && (
-            <>
+            <LayoutGroup>
               <Field
                 name="multimint"
                 type="number"
                 label="Multimint"
                 defaultValue={20}
                 step={1}
-                component={OptionalInputField}
+                component={withFramerMotion(OptionalInputField, 1)}
               />
               <Field
                 name="limitPerWallet"
@@ -147,29 +179,29 @@ export const ContractSettings = ({ baseUri }: { baseUri: string }) => {
                 label="Limit Per Wallet"
                 defaultValue={20}
                 step={1}
-                component={OptionalInputField}
+                component={withFramerMotion(OptionalInputField, 2)}
               />
               <Field
                 name="onlyOwnerCanMint"
                 label="Only Owner Can Mint"
-                component={SwitchField}
+                component={withFramerMotion(SwitchField, 3)}
               />
               <Field
                 name="mintSpecifiedIds"
                 label="Mint Specified Ids"
-                component={SwitchField}
+                component={withFramerMotion(SwitchField, 4)}
               />
               <Field
                 name="enumerable"
                 label="Enumerable"
-                component={SwitchField}
+                component={withFramerMotion(SwitchField, 5)}
               />
               <Field
                 name="activateAutomatically"
                 label="Activate Automatically"
-                component={SwitchField}
+                component={withFramerMotion(SwitchField, 6)}
               />
-            </>
+            </LayoutGroup>
           )}
           <button
             type="submit"
