@@ -18,6 +18,7 @@ module.exports = {
 
       colors: {
         primaryBg: "hsl(225, 75%, 3%)",
+        "base-200": "#ffffff1a",
       },
     },
   },

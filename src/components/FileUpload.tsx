@@ -33,7 +33,10 @@ const FileUpload = ({ onFiles, ...props }: FileUploadProps) => {
         </span>
         <input
           multiple
-          onChange={(e) => onFiles(e.target.files)}
+          onChange={(e) => {
+            console.log(e.target.files);
+            onFiles(e.target.files);
+          }}
           type="file"
           data-testid="file-input"
           name="file_upload"

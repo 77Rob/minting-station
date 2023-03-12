@@ -13,6 +13,10 @@ import { publicProvider } from "wagmi/providers/public";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { useEffect } from "react";
+import { v4 as uuidv4 } from "uuid";
+import { Provider } from "react-redux";
+import store from "@/store";
 
 const mantleTestnetChain: Chain = {
   id: 5001,
@@ -57,14 +61,29 @@ const wagmiClient = createClient({
 });
 
 function MyApp({ Component, pageProps }: AppProps) {
+  useEffect(() => {
+    if (localStorage.getItem("userId") === null) {
+      const uuid = uuidv4();
+      localStorage.setItem("userId", uuid);
+    }
+  });
+
   return (
-    <WagmiConfig client={wagmiClient}>
-      <RainbowKitProvider chains={chains} theme={darkTheme()}>
-        <Header />
-        <Component {...pageProps} />
-        <Footer />
-      </RainbowKitProvider>
-    </WagmiConfig>
+    <Provider store={store}>
+      <WagmiConfig client={wagmiClient}>
+        <RainbowKitProvider
+          chains={chains}
+          theme={darkTheme({
+            accentColor: "#1e4fff",
+            borderRadius: "medium",
+          })}
+        >
+          <Header />
+          <Component {...pageProps} />
+          <Footer />
+        </RainbowKitProvider>
+      </WagmiConfig>
+    </Provider>
   );
 }
 

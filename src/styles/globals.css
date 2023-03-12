@@ -7,6 +7,8 @@
   html {
     font-family: "Poppins", sans-serif;
     color: white;
+    margin: 0;
+    padding: 0;
     position: relative;
     min-height: 100%;
     @apply pb-24;
@@ -15,7 +17,11 @@
 
 @layer components {
   .btn-primary {
-    @apply px-8 py-2 text-white shadow-sm font-semibold uppercase items-start duration-150 bg-[#1e4fff] text-center hover:bg-[#1e4fff6b] hover:-translate-y-1 hover:scale-[1.05];
+    @apply px-8 py-2 text-white shadow-sm font-semibold uppercase items-start duration-150 bg-[#1e4fff] text-center hover:bg-[#1e4fff6b]  hover:scale-[1.02];
+    border-radius: 12px;
+  }
+  .btn-red {
+    @apply px-8 py-2 text-white shadow-sm font-semibold uppercase items-start duration-150 bg-[#ff1e1e] text-center hover:bg-[#ff1e1e6b]  hover:scale-[1.02];
     border-radius: 12px;
   }
   .card {
@@ -30,11 +36,11 @@
   }
 
   .input {
-    background: rgba(255, 255, 255, 0.1);
+    background: #ffffff1a;
     border: 1px solid #eef2f6;
     border-radius: 12px;
     box-shadow: 0px 12px 25px rgba(112, 58, 202, 0.15);
-    @apply flex w-full px-4 py-2 mb-2 text-sm caret-[#1e4fff] focus:ring-2 ring-offset-0 focus:ring-white;
+    @apply flex w-full px-4 py-2 text-sm caret-[#1e4fff] focus:ring-2 ring-offset-0 focus:ring-white;
   }
 
   .centered-grid {
@@ -60,5 +66,24 @@
   }
   .centered-grid-item:last-child:nth-child(3n-2) {
     grid-column-end: 5;
+  }
+
+  .switch-input:checked ~ .dot {
+    transform: translateX(100%);
+    background-color: #1e50ff;
+  }
+
+  .box {
+    background-color: #1b1e26;
+    border: 2px solid #eef2f6;
+  }
+
+  .switch-input:checked ~ .box {
+    background-color: #050c26;
+  }
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
   }
 }
