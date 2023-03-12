@@ -1,6 +1,6 @@
 import { FormikProps, FieldInputProps } from "formik";
 
-export const SwitchField = ({
+const SwitchField = ({
   field,
   form,
   label,
@@ -34,3 +34,5 @@ export const SwitchField = ({
     </div>
   );
 };
+
+export default SwitchField;
