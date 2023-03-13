@@ -18,7 +18,7 @@ const AnimatedLogo = () => {
 
     return () => clearInterval(frameChangeInterval);
   }, []);
-  console.log(frame);
+
   return (
     <div className="flex justify-center items-center">
       {<img src={frames[frame]} className="w-[320px] object-contain" />}

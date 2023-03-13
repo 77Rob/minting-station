@@ -11,13 +11,11 @@ import { PlusIcon, GearIcon, RowsIcon, FourColumnsIcon } from "@/assets";
 const Images = () => {
   const dispatch = useAppDispatch();
   const imagesState = useAppSelector((state) => state.images);
-  console.log(imagesState.images);
   useEffect(() => {
     loadImages(dispatch);
   }, []);
 
   const [columns, setColumns] = useState(4);
-  console.log(columns);
 
   return (
     <div className="grid grid-cols-7 gap-4 mx-2 my-4">
@@ -68,6 +66,10 @@ const Images = () => {
   );
 };
 
+type INFTImage = IImage & {
+  columns: number;
+};
+
 const NFTImage = ({
   id,
   name,
@@ -75,52 +77,23 @@ const NFTImage = ({
   attributes,
   description,
   columns,
-}: IImage & { columns: number }) => {
+}: INFTImage) => {
   const [flipped, setFlipped] = useState(false);
 
-  return (
-    <>
-      <motion.div
-        style={{ display: !flipped ? "flex" : "none" }}
-        initial={{ opacity: 0, rotateY: 180 }}
-        whileInView={{
-          transition: { duration: 0.3, ease: "easeInOut" },
-          opacity: 1,
-          rotateY: [180, 140, 80, 50, 20],
-        }}
-        className="px-2 py-2 bg-base-200 border-highlight border-2 rounded-xl flex flex-col"
+  const SettingsButton = () => {
+    return (
+      <motion.button
+        whileTap={{ scale: 0.92 }}
+        onClick={() => setFlipped((flipped) => !flipped)}
+        whileHover={{ scale: 1.08 }}
       >
-        <div className="flex justify-between items-center">
-          <input
-            className="bg-inherit w-6 h-6 border-white border-2 rounded-md ring-0 checked:text-white checked:bg-gray-100 checkbox-fix focus:ring-0  "
-            type="checkbox"
-          />
+        <GearIcon />
+      </motion.button>
+    );
+  };
 
-          <h1 className="text-xl font-bold">{name}</h1>
-          <motion.button
-            onClick={() => setFlipped((flipped) => !flipped)}
-            whileTap={{ scale: 0.92 }}
-            whileHover={{ scale: 1.08 }}
-          >
-            <svg
-              width="29"
-              height="29"
-              viewBox="0 0 29 29"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M26.8961 12.1544C26.869 12.0321 26.8158 11.9171 26.7404 11.817C26.6649 11.717 26.5688 11.6344 26.4586 11.5747L23.8555 10.131C23.717 9.84661 23.5638 9.57317 23.3961 9.31067L23.4399 6.33567C23.4409 6.21089 23.4161 6.08724 23.3672 5.97244C23.3183 5.85765 23.2462 5.75418 23.1555 5.66848C21.8594 4.49332 20.3265 3.60943 18.6602 3.0763C18.5405 3.03898 18.4143 3.02749 18.2899 3.04257C18.1654 3.05765 18.0456 3.09897 17.9383 3.1638L15.3899 4.69504C15.0727 4.68411 14.7664 4.68411 14.4492 4.69504L11.9008 3.1638C11.7935 3.09897 11.6737 3.05765 11.5493 3.04257C11.4248 3.02749 11.2986 3.03898 11.1789 3.0763C9.51038 3.60984 7.97691 4.49783 6.68362 5.67942C6.59212 5.76217 6.5194 5.86354 6.47035 5.97674C6.42129 6.08994 6.39705 6.21232 6.39924 6.33567L6.45393 9.31067C6.27893 9.57317 6.12581 9.84661 5.97268 10.131L3.3805 11.5747C3.26894 11.6326 3.17175 11.7147 3.09605 11.815C3.02035 11.9153 2.96805 12.0313 2.943 12.1544C2.57108 13.8625 2.57108 15.6307 2.943 17.3388C2.97016 17.4611 3.02328 17.5762 3.09876 17.6762C3.17424 17.7762 3.27032 17.8588 3.3805 17.9185L5.98362 19.3622C6.12317 19.6452 6.28024 19.9192 6.45393 20.1825L6.39924 23.1575C6.39824 23.2823 6.42298 23.406 6.47191 23.5208C6.52084 23.6356 6.59291 23.739 6.68362 23.8247C7.98154 24.9974 9.51381 25.881 11.1789 26.4169C11.2986 26.4542 11.4248 26.4657 11.5493 26.4506C11.6737 26.4356 11.7935 26.3942 11.9008 26.3294L14.4492 24.7982H15.3899L17.9492 26.3294C18.0823 26.4169 18.2385 26.4626 18.3977 26.4607C18.4866 26.4568 18.5748 26.4421 18.6602 26.4169C20.3287 25.8834 21.8622 24.9954 23.1555 23.8138C23.247 23.731 23.3197 23.6297 23.3688 23.5165C23.4178 23.4033 23.4421 23.2809 23.4399 23.1575L23.3961 20.1825C23.5602 19.92 23.7133 19.6466 23.8664 19.3622L26.4696 17.9185C26.5781 17.8582 26.6725 17.7752 26.7461 17.6752C26.8197 17.5751 26.8709 17.4604 26.8961 17.3388C27.268 15.6307 27.268 13.8625 26.8961 12.1544ZM19.7321 14.7466C19.7321 15.6984 19.4498 16.6289 18.921 17.4203C18.3922 18.2117 17.6406 18.8285 16.7612 19.1928C15.8819 19.557 14.9142 19.6523 13.9807 19.4666C13.0472 19.2809 12.1896 18.8226 11.5166 18.1496C10.8436 17.4765 10.3852 16.619 10.1995 15.6855C10.0138 14.7519 10.1091 13.7843 10.4734 12.9049C10.8376 12.0256 11.4545 11.274 12.2459 10.7452C13.0373 10.2164 13.9677 9.93411 14.9196 9.93411C16.1959 9.93411 17.42 10.4411 18.3225 11.3437C19.225 12.2462 19.7321 13.4703 19.7321 14.7466Z"
-                fill="white"
-              />
-            </svg>
-          </motion.button>
-        </div>
-        <div className="flex items-center  justify-center  border-4 h-full rounded-xl border-highlight ">
-          <img className="object-contain w-full rounded-xl  flex" src={url} />
-        </div>
-      </motion.div>
-
+  const NFTSettingsCard = () => {
+    return (
       <motion.div
         initial={{ opacity: 0, rotateY: -180 }}
         style={{ display: flipped ? "flex" : "none" }}
@@ -129,9 +102,9 @@ const NFTImage = ({
           opacity: [0.2, 0.5, 1],
           rotateY: [-140, -120, -60, -20, 0],
         }}
-        className={`border-2 px-2 py-2 bg-base-100 border-highlight bprder-2 rounded-xl flex flex-col ${
+        className={`border-2 px-2 py-2 bg-base-100 overflow-y-scroll  border-highlight bprder-2 rounded-xl flex flex-col ${
           columns > 2 && "min-h-[250px]"
-        }`}
+        } ${columns !== 1 && "max-h-72"}`}
       >
         <div className="flex justify-between items-center">
           <input
@@ -140,13 +113,7 @@ const NFTImage = ({
           />
 
           <h1 className="text-xl font-bold">{name}</h1>
-          <motion.button
-            whileTap={{ scale: 0.92 }}
-            onClick={() => setFlipped((flipped) => !flipped)}
-            whileHover={{ scale: 1.08 }}
-          >
-            <GearIcon />
-          </motion.button>
+          <SettingsButton />
         </div>
         <div className="flex flex-col rounded-xl justify-items-center">
           <Formik
@@ -189,15 +156,64 @@ const NFTImage = ({
               </div>
 
               <Field name="attributes" component={AttributesField} />
+              <button type="submit">Save</button>
             </Form>
           </Formik>
         </div>
       </motion.div>
+    );
+  };
+
+  const ImageCard = () => {
+    return (
+      <motion.div
+        style={{ display: !flipped ? "flex" : "none" }}
+        initial={{ opacity: 0, rotateY: 180 }}
+        whileInView={{
+          transition: { duration: 0.3, ease: "easeInOut" },
+          opacity: 1,
+          rotateY: [180, 140, 80, 50, 20],
+        }}
+        className={`px-2 py-2 bg-base-200 border-highlight border-2 rounded-xl flex flex-col ${
+          columns !== 1 && "max-h-285"
+        }`}
+      >
+        <div className="flex justify-between items-center">
+          <input
+            className="bg-inherit w-6 h-6 border-white border-2 rounded-md ring-0 checked:text-white checked:bg-gray-100 checkbox-fix focus:ring-0  "
+            type="checkbox"
+          />
+
+          <h1 className="text-xl font-bold">{name}</h1>
+          <SettingsButton />
+        </div>
+        <div className="flex items-center  justify-center  border-4 h-full rounded-xl border-highlight ">
+          <img className="object-contain w-full rounded-xl  flex" src={url} />
+        </div>
+      </motion.div>
+    );
+  };
+
+  return (
+    <>
+      <ImageCard />
+      <NFTSettingsCard />
     </>
   );
 };
 
-export const LabelFieldSmall = ({ label, field, form, ...props }: any) => {
+interface ILabelFieldSmall {
+  label: string;
+  field: FieldInputProps<any>;
+  form: FormikProps<any>;
+}
+
+export const LabelFieldSmall = ({
+  label,
+  field,
+  form,
+  ...props
+}: ILabelFieldSmall) => {
   return (
     <div className=" rounded-none">
       <label htmlFor={field.name} className="text-sm label font-bold">
@@ -208,18 +224,14 @@ export const LabelFieldSmall = ({ label, field, form, ...props }: any) => {
   );
 };
 
-const AttributesField = ({
-  field,
-  form,
-}: {
+interface IAttributesField {
   field: FieldInputProps<any>;
   form: FormikProps<any>;
-}) => {
+}
+
+const AttributesField = ({ field, form }: IAttributesField) => {
   const handleAddAttribute = () => {
-    form.setFieldValue("attributes", [
-      ...field.value,
-      { id: parseInt(100000 * Math.random()), name: "", value: "" },
-    ]);
+    form.setFieldValue("attributes", [...field.value, { name: "", value: "" }]);
   };
 
   return (
@@ -239,6 +251,7 @@ const AttributesField = ({
               <div key={attribute.id} className="flex">
                 <input
                   className="input-sm"
+                  required
                   onChange={(e) => {
                     const attributes = [...field.value];
                     attributes[index].name = e.target.value;

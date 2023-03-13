@@ -1,10 +1,23 @@
-import { Formik, Field, Form, FormikHelpers } from "formik";
+import {
+  Formik,
+  Field,
+  Form,
+  FormikHelpers,
+  FieldInputProps,
+  FormikProps,
+} from "formik";
 import { forwardRef, useRef, useState } from "react";
 import SwitchField from "@/components/SwitchField";
 import { OptionalInputField } from "@/components/OptionalInputField";
 import { motion, LayoutGroup, AnimatePresence } from "framer-motion";
 
-export const LabelField = ({ label, field, form, ...props }: any) => {
+interface ILabelField {
+  label: string;
+  field: FieldInputProps<any>;
+  form: FormikProps<any>;
+}
+
+export const LabelField = ({ label, field, form, ...props }: ILabelField) => {
   return (
     <div>
       <label htmlFor={field.name} className="label">
@@ -35,7 +48,11 @@ const withFramerMotion = (Component: any, i: number) => {
   );
 };
 
-export const ContractSettings = ({ baseUri }: { baseUri: string }) => {
+interface IContractSettings {
+  baseUri: string;
+}
+
+export const ContractSettings = ({ baseUri }: IContractSettings) => {
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
   type Values = {
     image?: string;

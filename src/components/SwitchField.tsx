@@ -1,16 +1,13 @@
 import { FormikProps, FieldInputProps } from "formik";
 
-const SwitchField = ({
-  field,
-  form,
-  label,
-  ...props
-}: {
+interface ISwitchField {
   field: FieldInputProps<any>;
   form: FormikProps<any>;
   label: string;
   props: any;
-}) => {
+}
+
+const SwitchField = ({ field, form, label, ...props }: ISwitchField) => {
   return (
     <div className="grid grid-cols-10 gap-2 mb-2  items-center">
       <p className="font-bold col-span-8">{label}</p>
