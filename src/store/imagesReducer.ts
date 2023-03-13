@@ -44,7 +44,7 @@ const imagesSlice = createSlice({
         name: image.name,
         id: image.fileName,
         description: image.description || "",
-        attributes: image.attributes,
+        attributes: image.attributes || [],
       }));
     },
   },

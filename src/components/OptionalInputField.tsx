@@ -1,5 +1,6 @@
 import { FormikProps, FieldInputProps } from "formik";
 import { useState } from "react";
+import { PlusIcon, MinusIcon } from "@/assets";
 
 export const OptionalInputField = ({
   field,
@@ -67,21 +68,7 @@ export const OptionalInputField = ({
             className="text-xl flex justify-center w-[20%]"
             onClick={handleDecrement}
           >
-            <svg
-              width="21"
-              height="21"
-              viewBox="0 0 21 21"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M3.69189 10.6064H17.4419"
-                stroke="#FFFFFF"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
+            <MinusIcon />
           </button>
           <input
             {...field}
@@ -96,28 +83,7 @@ export const OptionalInputField = ({
             className="text-xl flex justify-center w-[20%]"
             onClick={() => handleIncrement()}
           >
-            <svg
-              width="21"
-              height="21"
-              viewBox="0 0 21 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M4.00391 10H17.7539"
-                stroke="white"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-              <path
-                d="M10.8789 3.125V16.875"
-                stroke="white"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
+            <PlusIcon />
           </button>
         </div>
       )}
