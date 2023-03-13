@@ -13,12 +13,35 @@
     min-height: 100%;
     @apply pb-24;
   }
+
+  /* width */
+  ::-webkit-scrollbar {
+    width: 12px;
+    @apply rounded-xl;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 15px rgba(112, 58, 202, 0.2);
+    @apply mt-1 rounded-xl;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-xl bg-gray-400;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    @apply rounded-xl bg-gray-700;
+  }
 }
 
 @layer components {
   .btn-primary {
-    @apply px-8 py-2 text-white shadow-sm font-semibold uppercase rounded-xl items-start duration-150 bg-[#1e4fff] text-center hover:bg-[#1e4fff6b]  hover:scale-[1.02];
+    @apply px-8 py-2 text-white drop-shadow-2xl shadow-lg shadow-[#1e4fff70] font-semibold uppercase rounded-xl items-start duration-150 bg-[#1e4fff] text-center hover:bg-[#1e4fff6b]  hover:scale-[1.02];
   }
+
   .btn-red {
     @apply px-8 py-2 text-white shadow-sm font-semibold uppercase rounded-xl items-start duration-150 bg-[#ff1e1e] text-center hover:bg-[#ff1e1e6b]  hover:scale-[1.02];
   }

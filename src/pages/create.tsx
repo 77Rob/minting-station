@@ -1,3 +1,5 @@
+import Button from "@/components/Button";
+import { motion } from "framer-motion";
 import Link from "next/link";
 
 interface IOption {
@@ -54,7 +56,7 @@ const OptionCard = ({ name, description, image, href }: IOption) => {
       <h1 className="uppercase text-xl mb-2 font-semibold">{name}</h1>
       <p className="text-xs uppercase text-[#ADB9C7] mb-6">{description}</p>
       <Link href={href} onClick={() => console.log(href)} className="mt-auto">
-        <button className="btn-primary ">SELECT</button>
+        <Button>Select</Button>
       </Link>
     </div>
   );

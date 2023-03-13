@@ -3,6 +3,8 @@ import Image from "next/image";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import AnimatedLogo from "@/components/AnimatedLogo";
 import Link from "next/link";
+import { motion } from "framer-motion";
+import Button from "@/components/Button";
 
 export default function Home() {
   return (
@@ -23,7 +25,7 @@ export default function Home() {
           collection with the world !!!!
         </p>
         <Link href="/create">
-          <button className="btn-primary">BEGIN</button>
+          <Button>BEGIN</Button>
         </Link>
       </main>
     </>

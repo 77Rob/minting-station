@@ -6,7 +6,14 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Field, FieldInputProps, Form, Formik, FormikProps } from "formik";
 import { LabelField } from "../../components/ContractSettings";
-import { PlusIcon, GearIcon, RowsIcon, FourColumnsIcon } from "@/assets";
+import {
+  PlusIcon,
+  GearIcon,
+  RowsIcon,
+  FourColumnsIcon,
+  MinusIcon,
+} from "@/assets";
+import Button from "@/components/Button";
 
 const Images = () => {
   const dispatch = useAppDispatch();
@@ -15,10 +22,10 @@ const Images = () => {
     loadImages(dispatch);
   }, []);
 
-  const [columns, setColumns] = useState(4);
+  const [columns, setColumns] = useState(6);
 
   return (
-    <div className="grid grid-cols-7 gap-4 mx-2 my-4">
+    <div className="grid grid-cols-7 gap-8 px-8 mx-2 my-4">
       <div className="col-span-5 space-y-4">
         <div className="card px-2 py-4 grid grid-cols-5">
           <FileUpload
@@ -30,27 +37,23 @@ const Images = () => {
           <div className="col-span-2" />
           <div className="col-span-1 flex flex-col gap-2">
             <button className="btn-red">Reset</button>
-            <button className="btn-primary"> Load Demo</button>
+            <button className="btn-primary">Load Demo</button>
           </div>
         </div>
         <div className="card py-2  w-full overflow-auto h-screen">
-          <div className="flex items-center justify-start">
-            <motion.button
-              whileTap={{ scale: 0.92 }}
-              whileHover={{ scale: 1.08 }}
-              onClick={() => setColumns(4)}
-            >
+          <div className="flex items-center space-x-2 pb-1 justify-start">
+            <Button className="btn-primary p-1" onClick={() => setColumns(4)}>
               <FourColumnsIcon />
-            </motion.button>
-            <motion.button
-              whileTap={{ scale: 0.92 }}
-              whileHover={{ scale: 1.08 }}
-              onClick={() => setColumns(1)}
-            >
+            </Button>
+            <Button className="btn-primary p-1" onClick={() => setColumns(1)}>
               <RowsIcon />
-            </motion.button>
+            </Button>
           </div>
-          <div className={`grid grid-cols-${columns.toString()} gap-2`}>
+          <div
+            className={`grid ${
+              columns == 1 ? "gird-cols-1" : "grid-cols-5"
+            } gap-2`}
+          >
             {imagesState.images &&
               imagesState.images?.map((image, index) => (
                 <NFTImage key={image.id} {...image} columns={columns} />
@@ -80,42 +83,47 @@ const NFTImage = ({
 }: INFTImage) => {
   const [flipped, setFlipped] = useState(false);
 
-  const SettingsButton = () => {
+  const NFTHeader = () => {
     return (
-      <motion.button
-        whileTap={{ scale: 0.92 }}
-        onClick={() => setFlipped((flipped) => !flipped)}
-        whileHover={{ scale: 1.08 }}
-      >
-        <GearIcon />
-      </motion.button>
+      <div className="flex justify-between items-center px-2 py-1">
+        <input
+          className="bg-inherit w-6 h-6 border-white border-2 rounded-md ring-0 checked:text-white checked:bg-gray-100 checkbox-fix focus:ring-0 cursor-pointer"
+          type="checkbox"
+        />
+        <h1 className="text-xl font-bold">{name}</h1>
+        <motion.button
+          whileTap={{ scale: 0.92 }}
+          onClick={() => setFlipped((flipped) => !flipped)}
+          whileHover={{ scale: 1.08 }}
+        >
+          <GearIcon />
+        </motion.button>
+      </div>
     );
+  };
+
+  // Styles object so changes affect both card and settings
+  const styles = {
+    card: `border-[3px] bg-base-100 border-highlight rounded-xl flex flex-col  ${
+      columns !== 1 && "h-80 max-h-80"
+    }`,
   };
 
   const NFTSettingsCard = () => {
     return (
       <motion.div
         initial={{ opacity: 0, rotateY: -180 }}
+        viewport={{ once: true }}
         style={{ display: flipped ? "flex" : "none" }}
         whileInView={{
           transition: { duration: 0.3 },
           opacity: [0.2, 0.5, 1],
           rotateY: [-140, -120, -60, -20, 0],
         }}
-        className={`border-2 px-2 py-2 bg-base-100 overflow-y-scroll  border-highlight bprder-2 rounded-xl flex flex-col ${
-          columns > 2 && "min-h-[250px]"
-        } ${columns !== 1 && "max-h-72"}`}
+        className={styles.card + "p-2 overflow-y-auto "}
       >
-        <div className="flex justify-between items-center">
-          <input
-            className="bg-inherit w-6 h-6 border-white border-2 rounded-md ring-0 checked:text-white checked:bg-gray-100 checkbox-fix focus:ring-0  "
-            type="checkbox"
-          />
-
-          <h1 className="text-xl font-bold">{name}</h1>
-          <SettingsButton />
-        </div>
-        <div className="flex flex-col rounded-xl justify-items-center">
+        <NFTHeader />
+        <div className="flex flex-col rounded-xl justify-items-center p-2">
           <Formik
             initialValues={{
               name: name,
@@ -126,11 +134,7 @@ const NFTImage = ({
               console.log(values);
             }}
           >
-            <Form
-              className={`${
-                columns > 2 ? "space-y-1" : "space-y-4"
-              } overflow-y-auto overflow-x-hidden`}
-            >
+            <Form className={`${columns == 1 ? "space-y-1" : "space-y-4"} `}>
               <Field
                 name="name"
                 type="text"
@@ -146,6 +150,7 @@ const NFTImage = ({
                 >
                   Description
                 </label>
+
                 <Field
                   name="description"
                   as="textarea"
@@ -156,7 +161,9 @@ const NFTImage = ({
               </div>
 
               <Field name="attributes" component={AttributesField} />
-              <button type="submit">Save</button>
+              <Button type="submit" className="w-full mt-2">
+                Save
+              </Button>
             </Form>
           </Formik>
         </div>
@@ -169,26 +176,24 @@ const NFTImage = ({
       <motion.div
         style={{ display: !flipped ? "flex" : "none" }}
         initial={{ opacity: 0, rotateY: 180 }}
+        viewport={{ once: true }}
         whileInView={{
           transition: { duration: 0.3, ease: "easeInOut" },
           opacity: 1,
+
           rotateY: [180, 140, 80, 50, 20],
         }}
-        className={`px-2 py-2 bg-base-200 border-highlight border-2 rounded-xl flex flex-col ${
-          columns !== 1 && "max-h-285"
-        }`}
+        className={styles.card}
       >
-        <div className="flex justify-between items-center">
-          <input
-            className="bg-inherit w-6 h-6 border-white border-2 rounded-md ring-0 checked:text-white checked:bg-gray-100 checkbox-fix focus:ring-0  "
-            type="checkbox"
+        <NFTHeader />
+        <div className="flex items-center  justify-center  border-[3px] h-full border-highlight ">
+          <img
+            className={
+              "object-contain min-w-[60%] flex bg-gray-600" +
+              (columns == 1 && "min-h-80")
+            }
+            src={url}
           />
-
-          <h1 className="text-xl font-bold">{name}</h1>
-          <SettingsButton />
-        </div>
-        <div className="flex items-center  justify-center  border-4 h-full rounded-xl border-highlight ">
-          <img className="object-contain w-full rounded-xl  flex" src={url} />
         </div>
       </motion.div>
     );
@@ -244,18 +249,26 @@ const AttributesField = ({ field, form }: IAttributesField) => {
           <PlusIcon className="w-5" />
         </button>
       </div>
-      <div>
+      <div className="flex justify">
+        <label className="space-x-2 text-sm label w-[45%] font-bold">
+          Name
+        </label>
+        <label className="text-sm label font-bold">Value</label>
+      </div>
+      <div className="space-y-1">
         {field.value &&
           field.value.map((attribute: any, index: number) => {
             return (
-              <div key={attribute.id} className="flex">
+              <div key={index} className="flex space-x-2">
                 <input
                   className="input-sm"
                   required
                   onChange={(e) => {
-                    const attributes = [...field.value];
-                    attributes[index].name = e.target.value;
-                    form.setFieldValue("attributes", attributes);
+                    if (e.target.value !== "\n") {
+                      const attributes = [...field.value];
+                      attributes[index].name = e.target.value;
+                      form.setFieldValue("attributes", attributes);
+                    }
                   }}
                   value={attribute.name}
                 />
@@ -268,6 +281,17 @@ const AttributesField = ({ field, form }: IAttributesField) => {
                   }}
                   value={attribute.value}
                 />
+                <motion.button
+                  onClick={() => {
+                    const attributes = [...field.value];
+                    attributes.splice(index, 1);
+                    form.setFieldValue("attributes", attributes);
+                  }}
+                  whileTap={{ scale: 0.85 }}
+                  whileHover={{ scale: 1.1 }}
+                >
+                  <MinusIcon />
+                </motion.button>
               </div>
             );
           })}

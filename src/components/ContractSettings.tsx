@@ -10,6 +10,7 @@ import { forwardRef, useRef, useState } from "react";
 import SwitchField from "@/components/SwitchField";
 import { OptionalInputField } from "@/components/OptionalInputField";
 import { motion, LayoutGroup, AnimatePresence } from "framer-motion";
+import Button from "./Button";
 
 interface ILabelField {
   label: string;
@@ -80,7 +81,7 @@ export const ContractSettings = ({ baseUri }: IContractSettings) => {
   };
 
   return (
-    <div className="card w-full" id="ultimateRef">
+    <div className="card w-full px-12" id="ultimateRef">
       <Formik
         initialValues={initialValues}
         onSubmit={(
@@ -116,6 +117,7 @@ export const ContractSettings = ({ baseUri }: IContractSettings) => {
             <Field
               name="description"
               as="textarea"
+              rows="6"
               className="input resize-y mb-4 px-4"
             />
           </div>
@@ -149,12 +151,16 @@ export const ContractSettings = ({ baseUri }: IContractSettings) => {
             whileTap={{ scale: 0.97 }}
             whileHover={{ scale: 1.02 }}
             onClick={() => setShowAdvancedOptions((curr) => !curr)}
-            className="w-full btn-primary px-3 flex justify-between items-center mb-4"
+            className="w-full btn-primary px-3 flex text-center
+             items-center mb-4"
           >
-            ADVANCED OPTIONS
+            <p className="flex flex-grow justify-center ml-6">
+              ADVANCED SETTINGS
+            </p>
             {showAdvancedOptions ? (
               <svg
                 width="22"
+                className="justify-self-end"
                 height="13"
                 viewBox="0 0 22 13"
                 fill="none"
@@ -220,12 +226,12 @@ export const ContractSettings = ({ baseUri }: IContractSettings) => {
               />
             </LayoutGroup>
           )}
-          <button
+          <Button
             type="submit"
             className="btn-primary  px-8 w-full text-center"
           >
             DEPLOY COLLECTION
-          </button>
+          </Button>
         </Form>
       </Formik>
     </div>
