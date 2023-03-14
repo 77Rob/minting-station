@@ -1,10 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/store";
-import {
-  IImage,
-  deselectImage,
-  selectImage,
-  updateMetadata,
-} from "@/store/imagesReducer";
+import { IImage, deselectImage, selectImage } from "@/store/imagesReducer";
+import { updateMetadata } from "@/store/async/images";
 import { useState } from "react";
 import { AnimatePresence, motion, useAnimation } from "framer-motion";
 import { Field, Form, Formik } from "formik";

@@ -3,12 +3,10 @@ import { ContractSettings } from "../../components/ContractSettings";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
   Image,
-  deleteImages,
   deselectAllImages,
-  loadImages,
   selectAllImages,
-  uploadImages,
 } from "@/store/imagesReducer";
+import { deleteImages, loadImages, uploadImages } from "@/store/async/images";
 import { useEffect, useState } from "react";
 import { FieldInputProps, FormikProps } from "formik";
 import { RowsIcon, FourColumnsIcon } from "@/assets";

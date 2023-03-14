@@ -5,13 +5,15 @@ import { useAppDispatch, useAppSelector } from "@/store";
 import {
   CollectionType,
   IContract,
-  deployContract,
   initialContractState,
-  loadCollection,
   submitContractValues,
   translateDeploymentStatus,
-  uploadImage,
 } from "@/store/contractReducer";
+import {
+  deployContract,
+  loadCollection,
+  uploadImage,
+} from "@/store/async/contracts";
 import {
   Field,
   FieldInputProps,
