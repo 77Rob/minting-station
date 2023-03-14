@@ -6,11 +6,12 @@ import {
   FieldInputProps,
   FormikProps,
 } from "formik";
-import { forwardRef, useRef, useState } from "react";
+import { forwardRef, useCallback, useRef, useState } from "react";
 import SwitchField from "@/components/SwitchField";
 import { OptionalInputField } from "@/components/OptionalInputField";
 import { motion, LayoutGroup, AnimatePresence } from "framer-motion";
 import Button from "./Button";
+import { useAppDispatch } from "@/store";
 
 interface ILabelField {
   label: string;
@@ -55,6 +56,44 @@ interface IContractSettings {
 
 export const ContractSettings = ({ baseUri }: IContractSettings) => {
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
+  const dispatch = useAppDispatch();
+
+  // const handleCompile = useCallback(() => {
+  //   async function main() {
+  //     dispatch(handleStartCompile());
+  //     const contractName = getValidContractName(state.contract.tokenName);
+  //     const sourceName = contractName + ".sol";
+
+  //     const source = generateContractSource(state.contract);
+
+  //     const files = await downloadDependenciesForSource(
+  //       fetch,
+  //       sourceName,
+  //       source,
+  //       {
+  //         "@openzeppelin/contracts": OPEN_ZEPPELIN_VERSION,
+  //       }
+  //     );
+
+  //     dispatch(handleCompilerReady({ files: files }));
+
+  //     const output = await compiler.compile(files);
+  //     console.log(state.compiler.files);
+  //     console.log(
+  //       output.contracts[sourceName][contractName].evm.bytecode.object
+  //     );
+  //     dispatch(
+  //       handleCompileSuccess({
+  //         value: output,
+  //         sourceName,
+  //         contractName,
+  //       })
+  //     );
+  //   }
+
+  //   main();
+  // }, [compiler, state.contract]);
+
   type Values = {
     image?: string;
     tokenName: string;
