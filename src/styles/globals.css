@@ -45,6 +45,10 @@
   .btn-red {
     @apply px-8 py-2 text-white shadow-sm font-semibold uppercase rounded-xl items-start duration-150 bg-[#ff1e1e] text-center hover:bg-[#ff1e1e6b]  hover:scale-[1.02];
   }
+
+  .btn-sm {
+    @apply text-sm  px-4 py-1 rounded-lg;
+  }
   .card {
     box-shadow: 0px 12px 25px rgba(112, 58, 202, 0.25);
     @apply py-8 px-5 bg-base-100 rounded-2xl;
