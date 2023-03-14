@@ -1,5 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { AppDispatch } from ".";
 
 export interface IAttribute {
   name: string;
@@ -7,14 +8,14 @@ export interface IAttribute {
 }
 
 export interface IImage {
-  id: string;
+  fileName: string;
   name: string;
   url: string;
   description?: string;
   attributes?: IAttribute[];
 }
 export type Image = {
-  id: string;
+  fileName: string;
   name: string;
   url: string;
   description?: string;
@@ -23,18 +24,44 @@ export type Image = {
 
 export interface IImagesReducerInitialState {
   images: IImage[];
-  metadata: any[];
+  selected: string[];
 }
 
 const initialState: IImagesReducerInitialState = {
   images: [],
-  metadata: [],
+  selected: [],
 };
 
 const imagesSlice = createSlice({
   name: "images",
   initialState,
   reducers: {
+    selectImage(state, action: PayloadAction<string>) {
+      state.selected.push(action.payload);
+    },
+    deselectImage(state, action: PayloadAction<string>) {
+      state.selected = state.selected.filter((item) => item !== action.payload);
+    },
+    deselectAllImages(state) {
+      state.selected = [];
+    },
+    selectAllImages(state) {
+      state.selected = state.images.map((image) => image.fileName);
+    },
+    handleUpdateMetadata(state, action: PayloadAction<IImage>) {
+      state.images = state.images.map((image) => {
+        if (image.fileName === action.payload.fileName) {
+          return action.payload;
+        } else {
+          return image;
+        }
+      });
+    },
+    handleDeleteImages(state, action: PayloadAction<string[]>) {
+      state.images = state.images.filter((image) =>
+        action.payload.includes(image.fileName)
+      );
+    },
     handleAddImages(state, action: PayloadAction<IImage[]>) {
       state.images.push(...action.payload);
     },
@@ -42,7 +69,7 @@ const imagesSlice = createSlice({
       state.images = action.payload.map((image) => ({
         url: image.url,
         name: image.name,
-        id: image.fileName,
+        fileName: image.fileName,
         description: image.description || "",
         attributes: image.attributes || [],
       }));
@@ -50,20 +77,71 @@ const imagesSlice = createSlice({
   },
 });
 
-export const { handleAddImages, handleLoadImages } = imagesSlice.actions;
+export const {
+  handleAddImages,
+  handleLoadImages,
+  handleUpdateMetadata,
+  handleDeleteImages,
+  selectImage,
+  deselectImage,
+  deselectAllImages,
+  selectAllImages,
+} = imagesSlice.actions;
 
-export const loadImages = async (dispatch: any) => {
-  const response = await axios.get(
-    `http://localhost:5000/images/${localStorage.getItem("userId")}`
-  );
-  console.log(response);
-  console.log(response.data[1].fileName);
+export const loadImages = async ({ dispatch }: { dispatch: AppDispatch }) => {
+  const response = await axios.get(`http://localhost:5000/images`, {
+    headers: {
+      userId: localStorage.getItem("userId"),
+    },
+  });
+
   dispatch(handleLoadImages(response.data));
 };
 
-export const uploadImages = async (images: any, dispatch: any) => {
-  console.log("uploading");
-  console.log(images);
+export const updateMetadata = async ({
+  imageData,
+  dispatch,
+}: {
+  imageData: IImage;
+  dispatch: AppDispatch;
+}) => {
+  const response = await axios.post(`http://localhost:5000/images/update`, {
+    headers: {
+      userId: localStorage.getItem("userId"),
+    },
+    params: {
+      imageData,
+    },
+  });
+
+  dispatch(handleUpdateMetadata(imageData));
+};
+
+export const deleteImages = async ({
+  fileNames,
+  dispatch,
+}: {
+  fileNames: any;
+  dispatch: AppDispatch;
+}) => {
+  const response = await axios.post("http://localhost:5000/images/delete", {
+    headers: {
+      userId: localStorage.getItem("userId"),
+    },
+    params: {
+      fileNames,
+    },
+  });
+  dispatch(handleDeleteImages(fileNames));
+};
+
+export const uploadImages = async ({
+  images,
+  dispatch,
+}: {
+  images: any;
+  dispatch: AppDispatch;
+}) => {
   const formData = new FormData();
   Object.keys(images).forEach((key) => {
     formData.append("file", images[key]);
