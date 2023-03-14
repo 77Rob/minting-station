@@ -1,6 +1,11 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { AppDispatch } from ".";
+import {
+  setTokenURI,
+  setContractURI,
+  startGeneratingContractURI,
+} from "./contractReducer";
 
 export interface IAttribute {
   name: string;
@@ -155,6 +160,38 @@ export const uploadImages = async ({
   });
 
   dispatch(handleAddImages(response.data));
+};
+
+export const handleCreateAndUploadMetadata = async ({
+  dispatch,
+  contract,
+}: any) => {
+  dispatch(startGeneratingContractURI());
+  const contractURIRequest = await axios.get(
+    `http://localhost:5000/images/contractURI`,
+    {
+      headers: {
+        userId: localStorage.getItem("userId"),
+      },
+      params: {
+        contract,
+      },
+    }
+  );
+
+  dispatch(setContractURI(contractURIRequest.data));
+
+  const metadataURIRequest = await axios.get(
+    `http://localhost:5000/images/metadataURI`,
+    {
+      headers: {
+        userId: localStorage.getItem("userId"),
+      },
+    }
+  );
+  const baseUri = metadataURIRequest.data as string;
+  const tokenUri = `${baseUri}/{tokenId}`;
+  dispatch(setTokenURI(tokenUri));
 };
 
 export default imagesSlice.reducer;
