@@ -6,9 +6,10 @@ import {
 } from "@/solidity-codegen";
 import { Action, createSlice } from "@reduxjs/toolkit";
 import { CompilerOutput } from "hardhat/types";
-import { useAppSelector } from ".";
+import { AppDispatch, useAppSelector } from ".";
 import { createCompilerInput } from "@/compiler";
 import { ContractFactory } from "ethers";
+import axios from "axios";
 
 export interface IContract {
   image?: string;
@@ -113,12 +114,12 @@ export interface IContractReducerState {
 }
 
 export const initialContractState: IContract = {
-  tokenName: "TestToken",
-  ticker: "TST",
-  royaltyBps: "",
-  price: "",
+  tokenName: "My Collection Name",
+  ticker: "MCN",
+  royaltyBps: undefined,
+  price: undefined,
   supply: 100,
-  description: "",
+  description: "Awesome NFT collection",
   multimint: undefined,
   tokenParameters: [],
   payoutDestinations: [],
@@ -138,12 +139,12 @@ export const initialState: IContractReducerState = {
   deploymentAddress: undefined,
   status: DeploymentStatus.Idle,
   contract: {
-    tokenName: "TestToken",
-    ticker: "TST",
-    royaltyBps: "",
-    price: "",
+    tokenName: "My Collection Name",
+    ticker: "MCN",
+    royaltyBps: undefined,
+    price: undefined,
     supply: 100,
-    description: "",
+    description: "Awesome NFT collection",
     multimint: undefined,
     tokenParameters: [],
     payoutDestinations: [],
@@ -154,7 +155,7 @@ export const initialState: IContractReducerState = {
     enumerable: false,
     activateAutomatically: true,
     tokenURI: "",
-    usesUriStorage: true,
+    usesUriStorage: false,
     externalURL: "",
     contractURI: undefined,
   },
@@ -174,8 +175,12 @@ const contractSlice = createSlice({
   name: "contract",
   initialState,
   reducers: {
-    saveContractValues: (state: any, action: any) => {
-      state.contract = { ...state.contract, ...action.payload };
+    setStatus: (state, action) => {
+      state.status = action.payload;
+    },
+
+    submitContractValues: (state: any, action: any) => {
+      state.contract = action.payload;
     },
     prepareCompiler: (state: any) => {
       state.status = DeploymentStatus.LoadingCompiler;
@@ -188,6 +193,14 @@ const contractSlice = createSlice({
       console.log(state);
       state.contract.tokenURI = action.payload;
       state.status = DeploymentStatus.MetadataReady;
+    },
+
+    handleLoadCollection(state: any, action) {
+      console.log(action.payload);
+      state.contract = { ...action.payload, ...state.contract };
+    },
+    addImage(state: any, action) {
+      state.contract.image = action.payload;
     },
     setContractURI: (state: any, action: any) => {
       state.contract.contractURI = action.payload.contractURI;
@@ -270,11 +283,11 @@ const initiateDeploymentTransaction = async ({
 
   dispatch(contractDeploying());
 
-  console.log("COMPILER INPUT \n \n \n \n \n");
-  console.log(createCompilerInput(state.compiler.files));
+  // console.log("COMPILER INPUT \n \n \n \n \n");
+  // console.log(createCompilerInput(state.compiler.files));
 
-  console.log("COMPILER INPUT \n \n \n \n \n");
-  console.log(JSON.stringify(createCompilerInput(state.compiler.files)));
+  // console.log("COMPILER INPUT \n \n \n \n \n");
+  // console.log(JSON.stringify(createCompilerInput(state.compiler.files)));
 
   try {
     const factory = new ContractFactory(abi, bytecode, signer);
@@ -289,10 +302,53 @@ const initiateDeploymentTransaction = async ({
   }
 };
 
+export const loadCollection = async ({
+  dispatch,
+}: {
+  dispatch: AppDispatch;
+}) => {
+  const response = await axios.get(`http://localhost:5000/collection`, {
+    headers: {
+      userId: localStorage.getItem("userId"),
+    },
+  });
+  console.log(response.data);
+  dispatch(handleLoadCollection(response.data));
+};
+
+export const uploadImage = async ({
+  images,
+  dispatch,
+}: {
+  images: any;
+  dispatch: AppDispatch;
+}) => {
+  const formData = new FormData();
+  Object.keys(images).forEach((key) => {
+    formData.append("image", images[key]);
+  });
+
+  const response = await axios.post(
+    `http://localhost:5000/collection/image`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        userId: localStorage.getItem("userId"),
+      },
+    }
+  );
+  console.log(response.data);
+  dispatch(addImage(response.data));
+};
+
 const handleMetadata = async ({ dispatch, getState, collectionType }: any) => {
   const state = getState();
   if (collectionType === CollectionType.MetadataProvided) {
-    // TODO: Upload metadata to IPFS
+    await createContractURITokenURIProvided({
+      dispatch,
+      contract: state.contract,
+    });
   }
   if (collectionType === CollectionType.BaseURIProvided) {
   }
@@ -301,15 +357,35 @@ const handleMetadata = async ({ dispatch, getState, collectionType }: any) => {
   }
 };
 
+export const createContractURITokenURIProvided = async ({
+  dispatch,
+  contract,
+}: {
+  dispatch: AppDispatch;
+  contract: any;
+}) => {
+  dispatch(setStatus(DeploymentStatus.GeneratingContractURI));
+  const response = await axios.post(
+    `http://localhost:5000/collection/contractURI`,
+    {
+      params: cont,
+    }
+  );
+};
+
 export const deployContract = async ({
   dispatch,
   getState,
   provider,
   signer,
+  values,
   compiler,
   collectionType,
 }: any) => {
   console.log("Handling metadata");
+  console.log(values);
+  dispatch(submitContractValues(values));
+  console.log(collectionType);
   await handleMetadata({ dispatch, getState, collectionType });
   console.log(getState());
   console.log("Preparing contract");
@@ -323,13 +399,16 @@ export default contractSlice.reducer;
 
 export const {
   prepareCompiler,
-  saveContractValues,
+  submitContractValues,
   setCompilerReady,
   completeCompilation,
   setTokenURI,
+  handleLoadCollection,
+  addImage,
   setContractURI,
   contractDeployed,
   startGeneratingContractURI,
   contractDeploying,
+  setStatus,
   contractDeployError,
 } = contractSlice.actions;

@@ -5,6 +5,7 @@ import {
   setTokenURI,
   setContractURI,
   startGeneratingContractURI,
+  IContract,
 } from "./contractReducer";
 
 export interface IAttribute {
@@ -63,9 +64,10 @@ const imagesSlice = createSlice({
       });
     },
     handleDeleteImages(state, action: PayloadAction<string[]>) {
-      state.images = state.images.filter((image) =>
-        action.payload.includes(image.fileName)
-      );
+      state.images = state.images.filter((image) => {
+        console.log(image.fileName, action.payload);
+        return !action.payload.includes(image.fileName);
+      });
     },
     handleAddImages(state, action: PayloadAction<IImage[]>) {
       state.images.push(...action.payload);
@@ -129,6 +131,7 @@ export const deleteImages = async ({
   fileNames: any;
   dispatch: AppDispatch;
 }) => {
+  console.log(fileNames);
   const response = await axios.post("http://localhost:5000/images/delete", {
     headers: {
       userId: localStorage.getItem("userId"),
@@ -137,6 +140,7 @@ export const deleteImages = async ({
       fileNames,
     },
   });
+  console.log(fileNames);
   dispatch(handleDeleteImages(fileNames));
 };
 
@@ -165,20 +169,32 @@ export const uploadImages = async ({
 export const handleCreateAndUploadMetadata = async ({
   dispatch,
   contract,
-}: any) => {
+}: {
+  dispatch: AppDispatch;
+  contract: IContract;
+}) => {
+  console.log("CONTRACTURI METADATA URI");
   dispatch(startGeneratingContractURI());
-  const contractURIRequest = await axios.get(
-    `http://localhost:5000/images/contractURI`,
+  console.log(contract);
+  const contractURIData = {
+    name: contract.tokenName,
+    description: contract.description,
+    image: contract.image,
+    external_link: contract.externalURL,
+  };
+  const contractURIRequest = await axios.post(
+    `http://localhost:5000/collection/contractURI`,
     {
       headers: {
         userId: localStorage.getItem("userId"),
       },
       params: {
-        contract,
+        ...contractURIData,
       },
     }
   );
-
+  console.log("contractURIRequest.data");
+  console.log(contractURIRequest.data);
   dispatch(setContractURI(contractURIRequest.data));
 
   const metadataURIRequest = await axios.get(

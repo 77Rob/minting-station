@@ -1,49 +1,43 @@
 import React from "react";
+import { CloudIcon } from "@heroicons/react/24/solid";
 
-interface FileUploadProps extends React.HTMLProps<HTMLDivElement> {
+interface FileUploadProps extends React.HTMLProps<HTMLLabelElement> {
   onFiles: (files: HTMLInputElement["files"]) => void;
 }
 
 const FileUpload = ({ onFiles, ...props }: FileUploadProps) => {
+  const labelStyle =
+    "flex justify-center w-full h-28 px-4 transition backdrop-invert-[5%] hover:backdrop-invert-[.15] border-2  rounded-xl appearance-none cursor-pointer  focus:outline-none";
   return (
-    <div {...props}>
-      <label
-        className="flex justify-center w-full h-28 px-4 transition backdrop-invert-[5%] hover:backdrop-invert-[.15]
-       border-2 border-primary border-dashed rounded-md appearance-none cursor-pointer  focus:outline-none"
-      >
+    <label
+      {...props}
+      className={
+        props.className ? props.className + " " + labelStyle : labelStyle
+      }
+    >
+      {!props.children ? (
         <span className="flex items-center space-x-2">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-6 h-6 text-primary"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-            />
-          </svg>
+          <CloudIcon className="w-8" />
           <span className="font-bold">
             Drop files to Attach, or
             <span className="text-blue-600 underline "> Browse</span>
           </span>
         </span>
-        <input
-          multiple
-          onChange={(e) => {
-            console.log(e.target.files);
-            onFiles(e.target.files);
-          }}
-          type="file"
-          data-testid="file-input"
-          name="file_upload"
-          className="hidden"
-        />
-      </label>
-    </div>
+      ) : (
+        props.children
+      )}
+      <input
+        multiple
+        onChange={(e) => {
+          console.log(e.target.files);
+          onFiles(e.target.files);
+        }}
+        type="file"
+        data-testid="file-input"
+        name="file_upload"
+        className="hidden"
+      />
+    </label>
   );
 };
 

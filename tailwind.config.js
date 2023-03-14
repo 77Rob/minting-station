@@ -21,6 +21,7 @@ module.exports = {
         "base-200": "#ffffff1a",
         highlight: "#4D56AF",
         "base-100": "#272d37",
+        primary: "#1e4fff",
       },
     },
   },

@@ -1,43 +1,32 @@
-import { createCompilerInput } from "@/compiler/index";
-import {
-  downloadDependenciesForSource,
-  generateContractSource,
-  getValidContractName,
-} from "@/solidity-codegen";
-import {
-  Formik,
-  Field,
-  Form,
-  FormikHelpers,
-  FieldInputProps,
-  FormikProps,
-} from "formik";
-import {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import SwitchField from "@/components/SwitchField";
+import { useCompiler } from "@/compiler";
 import { OptionalInputField } from "@/components/OptionalInputField";
-import { motion, LayoutGroup, AnimatePresence } from "framer-motion";
-import Button from "./Button";
+import SwitchField from "@/components/SwitchField";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
-  prepareContract,
-  saveContractValues,
-  initialState,
   CollectionType,
+  IContract,
   deployContract,
-  translateDeploymentStatus,
   initialContractState,
+  loadCollection,
+  submitContractValues,
+  translateDeploymentStatus,
+  uploadImage,
 } from "@/store/contractReducer";
-import { useCompiler } from "@/compiler";
+import {
+  Field,
+  FieldInputProps,
+  Form,
+  Formik,
+  FormikHelpers,
+  FormikProps,
+} from "formik";
+import { LayoutGroup, motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { useAccount, useProvider, useSigner } from "wagmi";
-import ConfirmationButton from "./ConfirmationButton";
-import { CogIcon } from "@heroicons/react/24/solid";
+import Button from "./Button";
+import FileUpload from "./FileUpload";
+import { DeepPartial } from "redux";
+import { CloudIcon } from "@heroicons/react/24/solid";
 
 interface ILabelField {
   label: string;
@@ -75,10 +64,6 @@ const withFramerMotion = (Component: any, i: number) => {
     </motion.div>
   );
 };
-
-interface IContractSettings {
-  baseUri: string;
-}
 
 const DeploymentModal = ({ setOpen }: any) => {
   const dispatch = useAppDispatch();
@@ -136,7 +121,11 @@ const DeploymentModal = ({ setOpen }: any) => {
   );
 };
 
-export const ContractSettings = ({ baseUri }: IContractSettings) => {
+export const ContractSettings = ({
+  collectionType,
+}: {
+  collectionType: CollectionType;
+}) => {
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
   const dispatch = useAppDispatch();
   const compiler = useCompiler();
@@ -147,49 +136,49 @@ export const ContractSettings = ({ baseUri }: IContractSettings) => {
   const state = useAppSelector((state) => state.contract);
   const [showDeploymentModal, setShowDeploymentModal] = useState(false);
 
-  type Values = {
-    image?: string;
-    tokenName: string;
-    ticker: string;
-    royaltyBps?: string;
-    price?: string;
-    supply?: string;
-    description?: string;
-    multimint?: number;
-    limitPerWallet?: number;
-    mintSpecifiedIds: boolean;
-    onlyOwnerCanMint: boolean;
-    enumerable: boolean;
-    externalURL: string;
-    activateAutomatically: boolean;
-  };
-
-  const initialValues: Values = {
-    tokenName: "",
-    ticker: "",
-    externalURL: "",
-    onlyOwnerCanMint: false,
-    enumerable: false,
-    mintSpecifiedIds: false,
-    activateAutomatically: true,
-  };
-
   const getState = () => {
     return state;
   };
 
+  useEffect(() => {
+    loadCollection({ dispatch });
+  }, []);
+
+  const UploadImage = () => {
+    return (
+      <FileUpload
+        className="col-span-2 h-56 justify-center border-solid"
+        onFiles={(files) => {
+          uploadImage({ images: files, dispatch });
+        }}
+      >
+        <span className="flex items-center text-center flex-col justify-center">
+          <CloudIcon className="w-12 mb-2" />
+          <span className="text-xl font-semibold">
+            Upload Collection Banner
+          </span>
+          <span className="text-sm text-gray-300 mb-6">
+            This image will be displayed on collection page and NFT marketplaces
+          </span>
+          <span className="text-xs text-gray-400">
+            Accepted formats: PNG, JPG, GIF, WEBP,
+          </span>
+        </span>
+      </FileUpload>
+    );
+  };
+
   return (
-    <div className="card w-full px-12" id="ultimateRef">
+    <div className="card py-6 w-full px-12" id="ultimateRef">
       {showDeploymentModal && (
         <DeploymentModal setOpen={setShowDeploymentModal} />
       )}
       <Formik
         initialValues={initialContractState}
-        onSubmit={async (
-          values: any,
-          { setSubmitting }: FormikHelpers<Values>
-        ) => {
+        onSubmit={async (values: any) => {
+          console.log(values);
           setShowDeploymentModal(true);
+          dispatch(submitContractValues(values));
           await deployContract({
             dispatch,
             getState,
@@ -197,26 +186,62 @@ export const ContractSettings = ({ baseUri }: IContractSettings) => {
             values,
             signer,
             provider,
-            collectionType: CollectionType.ImagesProvided,
+            collectionType,
           });
         }}
       >
         <Form className="space-y-3">
-          <Field
-            name="tokenName"
-            className="input"
-            type="text"
-            id="tokenName"
-            label="Token Name"
-            placeholder="Token Name"
-            component={LabelField}
+          {state.contract.image ? (
+            <div className="flex justify-center flex-col">
+              <label className="label text-lg text-center">
+                Collection Image
+              </label>
+              <img
+                className="col-span-2 h-56 justify-center object-contain border-solid rounded-xl backdrop-invert-[.15]"
+                src={state.contract.image}
+              />
+            </div>
+          ) : (
+            <UploadImage />
+          )}
+
+          <input
+            multiple
+            onChange={(e) => {
+              console.log(e.target.files);
+              uploadImage({ images: e.target.files, dispatch });
+            }}
+            type="file"
+            data-testid="file-input"
+            name="file_upload"
+            className="hidden"
           />
+          {CollectionType.BaseURIProvided && (
+            <Field
+              name="tokenName"
+              className="input"
+              type="text"
+              id="tokenName"
+              label="Token Name"
+              placeholder="Token Name"
+              component={LabelField}
+            />
+          )}
           <Field
             name="externalURL"
             className="input"
             type="text"
             id="externalURL"
             label="External Url"
+            placeholder="External Url"
+            component={LabelField}
+          />
+          <Field
+            name="tokenURI"
+            className="input"
+            type="text"
+            id="tokenURI"
+            label="Token URI"
             placeholder="External Url"
             component={LabelField}
           />

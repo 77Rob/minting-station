@@ -39,7 +39,7 @@
 
 @layer components {
   .btn-primary {
-    @apply px-8 py-2 text-white drop-shadow-2xl shadow-lg shadow-[#1e4fff70] font-semibold uppercase rounded-xl items-start duration-150 bg-[#1e4fff] text-center hover:bg-[#1e4fff6b]  hover:scale-[1.02];
+    @apply px-8 py-2 text-white drop-shadow-2xl shadow-lg shadow-[#1e4fff70] font-semibold uppercase rounded-xl items-start duration-150 bg-primary text-center hover:bg-[#1e4fff6b]  hover:scale-[1.02];
   }
 
   .btn-red {
@@ -50,12 +50,12 @@
     @apply text-sm  px-4 py-1 rounded-lg;
   }
   .card {
-    box-shadow: 0px 12px 25px rgba(112, 58, 202, 0.25);
-    @apply py-8 px-5 bg-base-100 rounded-2xl;
+    box-shadow: 0px 12px 25px rgba(122, 75, 197, 0.25);
+    @apply py-8 px-5 bg-base-100 rounded-xl;
   }
 
   .label {
-    @apply text-[#525C76] text-xs font-bold;
+    @apply text-[#8768c2] text-xs font-bold;
   }
 
   .input {

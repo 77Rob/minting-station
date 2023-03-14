@@ -11,9 +11,9 @@ const MinusIcon = (props: React.SVGProps<SVGSVGElement>) => {
       <path
         d="M3.69189 10.6064H17.4419"
         stroke="#FFFFFF"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
