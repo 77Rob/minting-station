@@ -1,3 +1,9 @@
+import { createCompilerInput } from "@/compiler/index";
+import {
+  downloadDependenciesForSource,
+  generateContractSource,
+  getValidContractName,
+} from "@/solidity-codegen";
 import {
   Formik,
   Field,
@@ -6,12 +12,32 @@ import {
   FieldInputProps,
   FormikProps,
 } from "formik";
-import { forwardRef, useCallback, useRef, useState } from "react";
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import SwitchField from "@/components/SwitchField";
 import { OptionalInputField } from "@/components/OptionalInputField";
 import { motion, LayoutGroup, AnimatePresence } from "framer-motion";
 import Button from "./Button";
-import { useAppDispatch } from "@/store";
+import { useAppDispatch, useAppSelector } from "@/store";
+import {
+  prepareContract,
+  saveContractValues,
+  initialState,
+  CollectionType,
+  deployContract,
+  translateDeploymentStatus,
+  initialContractState,
+} from "@/store/contractReducer";
+import { useCompiler } from "@/compiler";
+import { useAccount, useProvider, useSigner } from "wagmi";
+import ConfirmationButton from "./ConfirmationButton";
+import { CogIcon } from "@heroicons/react/24/solid";
 
 interface ILabelField {
   label: string;
@@ -54,45 +80,72 @@ interface IContractSettings {
   baseUri: string;
 }
 
+const DeploymentModal = ({ setOpen }: any) => {
+  const dispatch = useAppDispatch();
+  const state = useAppSelector((state) => state.contract);
+
+  return (
+    <div className="fixed z-10 inset-0 overflow-y-auto">
+      <div className="flex items-end justify-center min-h-screen pt-4 px-4  text-center sm:block sm:p-0">
+        <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+          <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+        </div>
+
+        <div
+          className="inline-block align-bottom bg-base-300 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-headline"
+        >
+          <div className="bg-base-100 px-4 pt-5 pb-8 sm:p-8 sm:pb-12">
+            <div className="sm:flex sm:items-start">
+              <button
+                onClick={() => setOpen(false)}
+                className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-base-300 sm:mx-0 sm:h-10 sm:w-10"
+              >
+                <svg
+                  className="h-6 w-6 text-red-600"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+              <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                <h3
+                  className="text-lg leading-6 font-medium "
+                  id="modal-headline"
+                ></h3>
+              </div>
+            </div>
+          </div>
+          <div className="bg-base-200 text-4xl px-4 py-3 sm:px-6 gap-2 sm:flex sm:flex-row-reverse">
+            {translateDeploymentStatus(state.status)}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const ContractSettings = ({ baseUri }: IContractSettings) => {
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
   const dispatch = useAppDispatch();
+  const compiler = useCompiler();
+  const provider = useProvider();
+  const { data: signer, isError, isLoading } = useSigner();
+  const { status: walletConnectionStatus } = useAccount();
 
-  // const handleCompile = useCallback(() => {
-  //   async function main() {
-  //     dispatch(handleStartCompile());
-  //     const contractName = getValidContractName(state.contract.tokenName);
-  //     const sourceName = contractName + ".sol";
-
-  //     const source = generateContractSource(state.contract);
-
-  //     const files = await downloadDependenciesForSource(
-  //       fetch,
-  //       sourceName,
-  //       source,
-  //       {
-  //         "@openzeppelin/contracts": OPEN_ZEPPELIN_VERSION,
-  //       }
-  //     );
-
-  //     dispatch(handleCompilerReady({ files: files }));
-
-  //     const output = await compiler.compile(files);
-  //     console.log(state.compiler.files);
-  //     console.log(
-  //       output.contracts[sourceName][contractName].evm.bytecode.object
-  //     );
-  //     dispatch(
-  //       handleCompileSuccess({
-  //         value: output,
-  //         sourceName,
-  //         contractName,
-  //       })
-  //     );
-  //   }
-
-  //   main();
-  // }, [compiler, state.contract]);
+  const state = useAppSelector((state) => state.contract);
+  const [showDeploymentModal, setShowDeploymentModal] = useState(false);
 
   type Values = {
     image?: string;
@@ -107,27 +160,45 @@ export const ContractSettings = ({ baseUri }: IContractSettings) => {
     mintSpecifiedIds: boolean;
     onlyOwnerCanMint: boolean;
     enumerable: boolean;
+    externalURL: string;
     activateAutomatically: boolean;
   };
 
   const initialValues: Values = {
     tokenName: "",
     ticker: "",
+    externalURL: "",
     onlyOwnerCanMint: false,
     enumerable: false,
     mintSpecifiedIds: false,
     activateAutomatically: true,
   };
 
+  const getState = () => {
+    return state;
+  };
+
   return (
     <div className="card w-full px-12" id="ultimateRef">
+      {showDeploymentModal && (
+        <DeploymentModal setOpen={setShowDeploymentModal} />
+      )}
       <Formik
-        initialValues={initialValues}
-        onSubmit={(
-          values: Values,
+        initialValues={initialContractState}
+        onSubmit={async (
+          values: any,
           { setSubmitting }: FormikHelpers<Values>
         ) => {
-          console.log(values);
+          setShowDeploymentModal(true);
+          await deployContract({
+            dispatch,
+            getState,
+            compiler,
+            values,
+            signer,
+            provider,
+            collectionType: CollectionType.ImagesProvided,
+          });
         }}
       >
         <Form className="space-y-3">
@@ -138,6 +209,15 @@ export const ContractSettings = ({ baseUri }: IContractSettings) => {
             id="tokenName"
             label="Token Name"
             placeholder="Token Name"
+            component={LabelField}
+          />
+          <Field
+            name="externalURL"
+            className="input"
+            type="text"
+            id="externalURL"
+            label="External Url"
+            placeholder="External Url"
             component={LabelField}
           />
           <Field
