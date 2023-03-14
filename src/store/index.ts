@@ -1,10 +1,12 @@
 import { applyMiddleware, configureStore } from "@reduxjs/toolkit";
 import thunkMiddleware from "redux-thunk";
 import imagesReducer from "./imagesReducer";
+import contractReducer from "./contractReducer";
 
 const store = configureStore({
   reducer: {
     images: imagesReducer,
+    contract: contractReducer,
   },
   middleware: [thunkMiddleware],
 });
