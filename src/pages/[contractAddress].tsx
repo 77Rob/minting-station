@@ -1,9 +1,11 @@
-import React from 'react'
+import React from "react";
+import { useRouter } from "next/router";
 
 const MintingPage = () => {
-  return (
-    <div>MintingPage</div>
-  )
-}
+  const router = useRouter();
+  const { contractAddress } = router.query;
 
-export default MintingPage
+  return <div>MintingPage</div>;
+};
+
+export default MintingPage;

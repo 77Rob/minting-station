@@ -4,7 +4,7 @@ import { updateMetadata } from "@/store/async/images";
 import { useState } from "react";
 import { AnimatePresence, motion, useAnimation } from "framer-motion";
 import { Field, Form, Formik } from "formik";
-import { LabelField } from "./ContractSettings";
+import { LabelField } from "./LabelField";
 import { GearIcon } from "@/assets";
 import Button from "@/components/Button";
 import { LabelFieldSmall } from "./LabelFieldSmall";

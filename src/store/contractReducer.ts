@@ -58,6 +58,7 @@ export enum DeploymentStatus {
   "Deploying",
   "Deployed",
   "Error",
+  "MintPageReady",
 }
 
 export const translateDeploymentStatus = (status: DeploymentStatus) => {
@@ -224,6 +225,9 @@ const contractSlice = createSlice({
       state.status = DeploymentStatus.Error;
       state.error = action.payload.error;
     },
+    contractSaved: (state: any, action) => {
+      state.status = DeploymentStatus.MintPageReady;
+    },
   },
 });
 
@@ -235,6 +239,7 @@ export const {
   setCompilerReady,
   completeCompilation,
   setTokenURI,
+  contractSaved,
   handleLoadCollection,
   addImage,
   setContractURI,

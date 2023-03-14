@@ -16,14 +16,7 @@ import {
   loadCollection,
   uploadImage,
 } from "@/store/async/contracts";
-import {
-  Field,
-  FieldInputProps,
-  Form,
-  Formik,
-  FormikHelpers,
-  FormikProps,
-} from "formik";
+import { Field, Form, Formik, FormikHelpers } from "formik";
 import { LayoutGroup, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useAccount, useProvider, useSigner } from "wagmi";
@@ -31,75 +24,30 @@ import Button from "./Button";
 import FileUpload from "./FileUpload";
 import { DeepPartial } from "redux";
 import { CloudIcon, XCircleIcon } from "@heroicons/react/24/solid";
-import { Progress, Spinner } from "flowbite-react";
+import { Progress, Spinner, Modal } from "flowbite-react";
 import Link from "next/link";
+import { withFramerMotion } from "./withFramerMotion";
+import { LabelField } from "./LabelField";
 
-interface ILabelField {
-  label: string;
-  field: FieldInputProps<any>;
-  form: FormikProps<any>;
-}
-
-export const LabelField = ({ label, field, form, ...props }: ILabelField) => {
-  return (
-    <div>
-      <label htmlFor={field.name} className="label">
-        {label}
-      </label>
-      <input className="input" {...field} {...props} />
-    </div>
-  );
-};
-
-const withFramerMotion = (Component: any, i: number) => {
-  return (props: any) => (
-    <motion.div
-      layout
-      viewport={{ margin: "600px" }}
-      initial={{ opacity: 0, y: -20 }}
-      whileInView={{
-        opacity: 1,
-        transition: {
-          type: "spring",
-          delay: i * 0.15,
-        },
-        y: 0,
-      }}
-    >
-      <Component {...props} />
-    </motion.div>
-  );
-};
-
-const DeploymentModal = ({ setOpen }: any) => {
-  const dispatch = useAppDispatch();
+const DeploymentModal = ({ setOpen, open }: any) => {
   const state = useAppSelector((state) => state.contract);
 
   return (
-    <div className="fixed z-10 inset-0 overflow-y-auto">
-      <div className="flex items-end justify-center h-screen pt-4 px-4  text-center sm:block sm:p-0">
-        <div className="fixed inset-0 transition-opacity" aria-hidden="true">
-          <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
-        </div>
-
-        <div
-          // className="inline-block align-bottom bg-base-100 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
-          className="flex flex-col  max-w-4xl m-auto mt-20 h-96 align-bottom card rounded-xl py-2 px-4 text-left overflow-hidden shadow-xl transform transition-all "
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="modal-headline"
-        >
-          <div className="flex items-center justify-between">
-            <XCircleIcon
-              onClick={() => setOpen(false)}
-              className="color-red-400 fill-red-600 w-8 h-8 rounded-lg cursor-pointer"
-            />
-            <p className="text-2xl items-center font-bold text-center  flex-1">
-              Smart Contract Deployment In Progress
-            </p>
-          </div>
-
-          <div className="w-full flex justify-center items-center gap-x-4 mt-4">
+    <>
+      <Modal
+        className="bg-base-100  backdrop-invert-[0.35] "
+        onClose={() => setOpen(false)}
+        defaultValue="7xl"
+        size="5xl"
+        show={open}
+      >
+        <Modal.Header className="bg-base-100 bg- text-white text-center">
+          <p className="text-2xl items-center font-bold text-center   text-white flex-1">
+            Smart Contract Deployment In Progress
+          </p>
+        </Modal.Header>
+        <Modal.Body className="bg-base-100 text-white pb-12">
+          <div className="w-full flex justify-center items-center gap-x-4 mt-4 gap-y-6 mb-6">
             {state.status !== DeploymentStatus.Idle &&
               state.status !== DeploymentStatus.Error &&
               state.status !== DeploymentStatus.Deployed && (
@@ -116,26 +64,34 @@ const DeploymentModal = ({ setOpen }: any) => {
             </h1>
           </div>
           {state.status == DeploymentStatus.Deployed && (
-            <div className="h-full flex items-center">
-              <h1 className="text-xl flex items-center">
-                Contract Deployed at:{" "}
+            <div className="h-full flex items-center flex-col">
+              <h1 className="text-xl flex gap-x-2 items-center">
+                <p>Contract Deployed at: </p>
                 <Link
+                  className="text-primary font-bold"
                   href={`https://explorer.testnet.mantle.xyz/address/${state.deploymentAddress}`}
                 >
+                  {"    "}
                   {state.deploymentAddress}
                 </Link>
               </h1>
-              <div>
-                <h1>Minting Page Was Generated</h1>
-                <Link href={`/${state.deploymentAddress}`}>
-                  <Button>Go To Minting Page</Button>
-                </Link>
-              </div>
             </div>
           )}
-        </div>
-      </div>
-    </div>
+        </Modal.Body>
+        <Modal.Footer className="bg-base-100 border-gray-600 border-t-4 ">
+          {state.deploymentAddress && (
+            <div className="flex flex-col items-center justify-center w-full">
+              <h1 className="text-xl font-bold mb-6">
+                Minting Page Was Generated
+              </h1>
+              <Link href={`/${state.deploymentAddress}`}>
+                <Button>Go To Minting Page</Button>
+              </Link>
+            </div>
+          )}
+        </Modal.Footer>
+      </Modal>
+    </>
   );
 };
 
@@ -188,7 +144,7 @@ export const ContractSettings = ({
   return (
     <div className="card py-6 w-full px-12" id="ultimateRef">
       {showDeploymentModal && (
-        <DeploymentModal setOpen={setShowDeploymentModal} />
+        <DeploymentModal open={open} setOpen={setShowDeploymentModal} />
       )}
       <Formik
         initialValues={initialContractState}
@@ -308,7 +264,7 @@ export const ContractSettings = ({
             component={OptionalInputField}
           />
 
-          <motion.button
+          <Button
             whileTap={{ scale: 0.97 }}
             whileHover={{ scale: 1.02 }}
             onClick={() => setShowAdvancedOptions((curr) => !curr)}
@@ -346,7 +302,7 @@ export const ContractSettings = ({
                 />
               </svg>
             )}
-          </motion.button>
+          </Button>
           {showAdvancedOptions && (
             <LayoutGroup>
               <Field

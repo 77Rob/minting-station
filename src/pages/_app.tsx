@@ -17,7 +17,7 @@ import { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Provider } from "react-redux";
 import store from "@/store";
-import { OpenButton } from "@/components/DeploymentModal";
+import { Flowbite } from "flowbite-react";
 
 const DeploymentModal = () => {
   return <div className="">Deployment Modal</div>;
@@ -84,7 +84,9 @@ function MyApp({ Component, pageProps }: AppProps) {
           })}
         >
           <Header />
-          <Component {...pageProps} />
+          <Flowbite>
+            <Component {...pageProps} />
+          </Flowbite>
           <Footer />
         </RainbowKitProvider>
       </WagmiConfig>

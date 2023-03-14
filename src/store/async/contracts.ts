@@ -1,4 +1,4 @@
-import { IContract } from "./../contractReducer";
+import { IContract, IContractReducerState } from "./../contractReducer";
 import { handleCreateAndUploadMetadata } from "./images";
 import {
   downloadDependenciesForSource,
@@ -58,6 +58,34 @@ export const prepareContract = async ({
     })
   );
 };
+
+const uploadMetadata = async ({ dispatch, getState, signer }: any) => {
+  const state = getState();
+  const { contract } = state;
+  const { sourceName, contractName, contracts } = state.compiler;
+  const mainContract = contracts[sourceName][contractName];
+  const {
+    abi,
+    evm: { bytecode },
+  } = mainContract;
+
+  const { deploymentAddress } = state;
+
+  const metadataFile = {
+    abi,
+    deploymentAddress,
+    owner: signer.getAddress(),
+    name: contract.tokenName,
+    description: contract.tokenDescription,
+    image: contract.image,
+    external_url: contract.externalURL,
+    attributes: contract.attributes,
+  };
+
+  await axios.post(`http://localhost:5000/collection/abi`, {
+    params: metadataFile,
+  });
+};
 const initiateDeploymentTransaction = async ({
   dispatch,
   getState,
@@ -72,8 +100,7 @@ const initiateDeploymentTransaction = async ({
   } = mainContract;
 
   dispatch(contractDeploying());
-  console.log(abi);
-  console.log(JSON.stringify(abi));
+
   try {
     const factory = new ContractFactory(abi, bytecode, signer);
     const contract = await factory.deploy(state.contract.tokenURI);
@@ -173,16 +200,12 @@ export const deployContract = async ({
   collectionType,
 }: any) => {
   console.log("Handling metadata");
-  console.log(compiler);
-  console.log(values);
   dispatch(submitContractValues(values));
-  console.log(collectionType);
   await handleMetadata({ dispatch, getState, collectionType });
-  console.log(getState());
   console.log("Preparing contract");
-  console.log(getState());
   await prepareContract({ dispatch, compiler, getState });
   console.log("Initiating deployment");
-  console.log(getState());
   await initiateDeploymentTransaction({ dispatch, getState, provider, signer });
+  console.log("Uploading metadata");
+  uploadMetadata({ dispatch, getState, signer });
 };
