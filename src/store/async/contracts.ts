@@ -6,7 +6,6 @@ import {
   getValidContractName,
 } from "@/solidity-codegen";
 import { AppDispatch } from "..";
-import { createCompilerInput } from "@/compiler";
 import { ContractFactory } from "ethers";
 import axios from "axios";
 import {
@@ -31,7 +30,7 @@ export const prepareContract = async ({
   compiler,
   getState,
 }: {
-  dispatch: any;
+  dispatch: AppDispatch;
   compiler: any;
   getState: any;
 }) => {
@@ -62,31 +61,23 @@ export const prepareContract = async ({
 const initiateDeploymentTransaction = async ({
   dispatch,
   getState,
-  provider,
   signer,
 }: any) => {
   const state = getState();
-
   const { sourceName, contractName, contracts } = state.compiler;
   const mainContract = contracts[sourceName][contractName];
-  console.log(createCompilerInput(state.compiler.files));
   const {
     abi,
     evm: { bytecode },
   } = mainContract;
 
   dispatch(contractDeploying());
-
-  // console.log("COMPILER INPUT \n \n \n \n \n");
-  // console.log(createCompilerInput(state.compiler.files));
-  // console.log("COMPILER INPUT \n \n \n \n \n");
-  // console.log(JSON.stringify(createCompilerInput(state.compiler.files)));
+  console.log(abi);
+  console.log(JSON.stringify(abi));
   try {
     const factory = new ContractFactory(abi, bytecode, signer);
     const contract = await factory.deploy(state.contract.tokenURI);
     await contract.deployed();
-    console.log("contract.address");
-    console.log(contract.address);
     dispatch(contractDeployed({ address: contract.address }));
   } catch (e) {
     console.log("deploy failure", e);
@@ -133,6 +124,7 @@ export const uploadImage = async ({
   console.log(response.data);
   dispatch(addImage(response.data));
 };
+
 const handleMetadata = async ({ dispatch, getState, collectionType }: any) => {
   const state = getState();
   if (collectionType === CollectionType.MetadataProvided) {
@@ -181,6 +173,7 @@ export const deployContract = async ({
   collectionType,
 }: any) => {
   console.log("Handling metadata");
+  console.log(compiler);
   console.log(values);
   dispatch(submitContractValues(values));
   console.log(collectionType);

@@ -65,23 +65,23 @@ export const translateDeploymentStatus = (status: DeploymentStatus) => {
     case DeploymentStatus.Idle:
       return "Idle";
     case DeploymentStatus.LoadingCompiler:
-      return "Loading compiler";
+      return "Downloading required libraries for compiler";
     case DeploymentStatus.CompilerReady:
-      return "Compiler ready";
+      return "Preparing compiler";
     case DeploymentStatus.ContractReady:
-      return "Contract ready";
+      return "Compiling Smart Contract";
     case DeploymentStatus.GeneratingContractURI:
-      return "Generating contract URI";
+      return "Generating and uploading to IPFS - ContractURI";
     case DeploymentStatus.GeneratingMetadata:
-      return "Generating metadata";
+      return "Generating and uploading to IPFS - ContractURI";
     case DeploymentStatus.MetadataReady:
-      return "Metadata ready";
+      return "Creating Deployment Transaction";
     case DeploymentStatus.Deploying:
-      return "Deploying";
+      return "Signing Transaction";
     case DeploymentStatus.Deployed:
-      return "Deployed";
+      return "Smart Contract Deployed";
     case DeploymentStatus.Error:
-      return "Error";
+      return "Couldn't deploy a contract ERROR";
   }
 };
 
@@ -94,6 +94,7 @@ export enum CollectionType {
 }
 
 export interface IContractReducerState {
+  deploymentActionsCompleted?: any[];
   status: DeploymentStatus;
   imagesURI?: string;
   error?: string;
@@ -127,6 +128,7 @@ export const initialContractState: IContract = {
 export const initialState: IContractReducerState = {
   deploymentAddress: undefined,
   status: DeploymentStatus.Idle,
+  deploymentActionsCompleted: [],
   contract: {
     tokenName: "My Collection Name",
     ticker: "MCN",
@@ -167,7 +169,6 @@ const contractSlice = createSlice({
     setStatus: (state, action) => {
       state.status = action.payload;
     },
-
     submitContractValues: (state: any, action: any) => {
       state.contract = action.payload;
     },
@@ -181,9 +182,11 @@ const contractSlice = createSlice({
       console.log("TOKEN URI");
       console.log(state);
       state.contract.tokenURI = action.payload;
+      state.deploymentActionsCompleted.push([
+        { name: "TokenURI Ready", value: action.payload },
+      ]);
       state.status = DeploymentStatus.MetadataReady;
     },
-
     handleLoadCollection(state: any, action) {
       console.log(action.payload);
       state.contract = { ...action.payload, ...state.contract };
@@ -194,10 +197,14 @@ const contractSlice = createSlice({
     setContractURI: (state: any, action: any) => {
       state.contract.contractURI = action.payload.contractURI;
       state.status = DeploymentStatus.GeneratingMetadata;
+      state.deploymentActionsCompleted.push([
+        { name: "ContractURI Ready", value: action.payload.contractURI },
+      ]);
     },
     setCompilerReady: (state, action) => {
       state.status = DeploymentStatus.CompilerReady;
       console.log("FILES", action.payload.files);
+
       state.compiler.files = action.payload.files;
     },
     completeCompilation: (state, action) => {

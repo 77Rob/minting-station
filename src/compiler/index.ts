@@ -43,12 +43,6 @@ export function createCompilerInput(
   };
 }
 
-/**
- * Wrap the relevant solc API methods so they're easier to use
- *
- * @param solc
- * @returns
- */
 export function wrapCompilerModule(
   solc: SolidityCompilerModule
 ): SolidityCompiler {
@@ -70,11 +64,7 @@ export function wrapCompilerModule(
 
 const COMPILER_URL =
   "https://binaries.soliditylang.org/bin/soljson-v0.8.9+commit.e5eed63a.js";
-/**
- * Download and evaluate the compiler script
- *
- * @returns The emscripten-compiled solc API
- */
+
 export async function downloadCompiler(): Promise<SolidityCompilerModule> {
   const self = globalThis;
 
@@ -95,7 +85,9 @@ export async function getCompiler(): Promise<SolidityCompiler> {
   return wrapCompilerModule(solc);
 }
 
-export function useCompiler() {
+export function useCompiler(): {
+  compile: (files: Record<string, string>) => Promise<SolidityCompilerOutput>;
+} {
   const requestId = useRef(0);
   const worker = useRef<Worker>();
 

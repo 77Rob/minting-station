@@ -70,7 +70,7 @@ const Create = () => {
       </h1>
       <div className="md:centered-grid gap-8 max-w-7xl mx-auto px-10">
         {options.map((option) => (
-          <OptionCard {...option} />
+          <OptionCard key={option.name} {...option} />
         ))}
       </div>
     </div>

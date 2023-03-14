@@ -4,9 +4,11 @@ import SwitchField from "@/components/SwitchField";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
   CollectionType,
+  DeploymentStatus,
   IContract,
   initialContractState,
   submitContractValues,
+  translateDeploymentProgress,
   translateDeploymentStatus,
 } from "@/store/contractReducer";
 import {
@@ -28,7 +30,9 @@ import { useAccount, useProvider, useSigner } from "wagmi";
 import Button from "./Button";
 import FileUpload from "./FileUpload";
 import { DeepPartial } from "redux";
-import { CloudIcon } from "@heroicons/react/24/solid";
+import { CloudIcon, XCircleIcon } from "@heroicons/react/24/solid";
+import { Progress, Spinner } from "flowbite-react";
+import Link from "next/link";
 
 interface ILabelField {
   label: string;
@@ -73,50 +77,62 @@ const DeploymentModal = ({ setOpen }: any) => {
 
   return (
     <div className="fixed z-10 inset-0 overflow-y-auto">
-      <div className="flex items-end justify-center min-h-screen pt-4 px-4  text-center sm:block sm:p-0">
+      <div className="flex items-end justify-center h-screen pt-4 px-4  text-center sm:block sm:p-0">
         <div className="fixed inset-0 transition-opacity" aria-hidden="true">
           <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
         </div>
 
         <div
-          className="inline-block align-bottom bg-base-300 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+          // className="inline-block align-bottom bg-base-100 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+          className="flex flex-col  max-w-4xl m-auto mt-20 h-96 align-bottom card rounded-xl py-2 px-4 text-left overflow-hidden shadow-xl transform transition-all "
           role="dialog"
           aria-modal="true"
           aria-labelledby="modal-headline"
         >
-          <div className="bg-base-100 px-4 pt-5 pb-8 sm:p-8 sm:pb-12">
-            <div className="sm:flex sm:items-start">
-              <button
-                onClick={() => setOpen(false)}
-                className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-base-300 sm:mx-0 sm:h-10 sm:w-10"
-              >
-                <svg
-                  className="h-6 w-6 text-red-600"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
+          <div className="flex items-center justify-between">
+            <XCircleIcon
+              onClick={() => setOpen(false)}
+              className="color-red-400 fill-red-600 w-8 h-8 rounded-lg cursor-pointer"
+            />
+            <p className="text-2xl items-center font-bold text-center  flex-1">
+              Smart Contract Deployment In Progress
+            </p>
+          </div>
+
+          <div className="w-full flex justify-center items-center gap-x-4 mt-4">
+            {state.status !== DeploymentStatus.Idle &&
+              state.status !== DeploymentStatus.Error &&
+              state.status !== DeploymentStatus.Deployed && (
+                <Spinner
+                  className="animate-spin"
+                  color="info"
+                  size="xl"
+                  aria-label="Extra large spinner Center-aligned"
+                />
+              )}
+
+            <h1 className="text-xl font-semibold">
+              {translateDeploymentStatus(state.status)}
+            </h1>
+          </div>
+          {state.status == DeploymentStatus.Deployed && (
+            <div className="h-full flex items-center">
+              <h1 className="text-xl flex items-center">
+                Contract Deployed at:{" "}
+                <Link
+                  href={`https://explorer.testnet.mantle.xyz/address/${state.deploymentAddress}`}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-              <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                <h3
-                  className="text-lg leading-6 font-medium "
-                  id="modal-headline"
-                ></h3>
+                  {state.deploymentAddress}
+                </Link>
+              </h1>
+              <div>
+                <h1>Minting Page Was Generated</h1>
+                <Link href={`/${state.deploymentAddress}`}>
+                  <Button>Go To Minting Page</Button>
+                </Link>
               </div>
             </div>
-          </div>
-          <div className="bg-base-200 text-4xl px-4 py-3 sm:px-6 gap-2 sm:flex sm:flex-row-reverse">
-            {translateDeploymentStatus(state.status)}
-          </div>
+          )}
         </div>
       </div>
     </div>
@@ -132,8 +148,7 @@ export const ContractSettings = ({
   const dispatch = useAppDispatch();
   const compiler = useCompiler();
   const provider = useProvider();
-  const { data: signer, isError, isLoading } = useSigner();
-  const { status: walletConnectionStatus } = useAccount();
+  const { data: signer } = useSigner();
 
   const state = useAppSelector((state) => state.contract);
   const [showDeploymentModal, setShowDeploymentModal] = useState(false);
@@ -218,17 +233,15 @@ export const ContractSettings = ({
             name="file_upload"
             className="hidden"
           />
-          {CollectionType.BaseURIProvided && (
-            <Field
-              name="tokenName"
-              className="input"
-              type="text"
-              id="tokenName"
-              label="Token Name"
-              placeholder="Token Name"
-              component={LabelField}
-            />
-          )}
+          <Field
+            name="tokenName"
+            className="input"
+            type="text"
+            id="tokenName"
+            label="Token Name"
+            placeholder="Token Name"
+            component={LabelField}
+          />
           <Field
             name="externalURL"
             className="input"
@@ -238,15 +251,17 @@ export const ContractSettings = ({
             placeholder="External Url"
             component={LabelField}
           />
-          <Field
-            name="tokenURI"
-            className="input"
-            type="text"
-            id="tokenURI"
-            label="Token URI"
-            placeholder="External Url"
-            component={LabelField}
-          />
+          {CollectionType.BaseURIProvided == collectionType && (
+            <Field
+              name="tokenURI"
+              className="input"
+              type="text"
+              id="tokenURI"
+              label="Token URI"
+              placeholder="External Url"
+              component={LabelField}
+            />
+          )}
           <Field
             name="ticker"
             className="input"
