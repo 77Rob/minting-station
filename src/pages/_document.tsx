@@ -1,5 +1,6 @@
 import { Html, Head, Main, NextScript } from "next/document";
 import Header from "@/components/Header";
+import DeploymentModal from "@/components/DeploymentModal";
 
 export default function Document() {
   return (

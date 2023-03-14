@@ -17,6 +17,11 @@ import { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Provider } from "react-redux";
 import store from "@/store";
+import { OpenButton } from "@/components/DeploymentModal";
+
+const DeploymentModal = () => {
+  return <div className="">Deployment Modal</div>;
+};
 
 const mantleTestnetChain: Chain = {
   id: 5001,

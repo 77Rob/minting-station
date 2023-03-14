@@ -1,7 +1,17 @@
 import { Lexer, rule, state, Token } from "language-tools";
 import { TokenParameter } from "@/store/contractReducer";
-import { encodeQueryParameters } from "@/utils";
 
+export function encodeQueryParameters(
+  parameters: Record<string, string | number | boolean>
+) {
+  const encoded = [];
+
+  for (const key in parameters) {
+    encoded.push(`${key}=${encodeURIComponent(parameters[key])}`);
+  }
+
+  return encoded.join("&");
+}
 const lexer = new Lexer([
   state("main", [
     rule("open", "{", {
