@@ -173,15 +173,13 @@ const contractSlice = createSlice({
     submitContractValues: (state: any, action: any) => {
       state.contract = action.payload;
     },
-    prepareCompiler: (state: any) => {
+    loadingCompiler: (state: any) => {
       state.status = DeploymentStatus.LoadingCompiler;
     },
-    startGeneratingContractURI: (state: any) => {
+    generatingContractURI: (state: any) => {
       state.status = DeploymentStatus.GeneratingContractURI;
     },
     setTokenURI: (state: any, action) => {
-      console.log("TOKEN URI");
-      console.log(state);
       state.contract.tokenURI = action.payload;
       state.deploymentActionsCompleted.push([
         { name: "TokenURI Ready", value: action.payload },
@@ -234,7 +232,7 @@ const contractSlice = createSlice({
 export default contractSlice.reducer;
 
 export const {
-  prepareCompiler,
+  loadingCompiler,
   submitContractValues,
   setCompilerReady,
   completeCompilation,
@@ -244,7 +242,7 @@ export const {
   addImage,
   setContractURI,
   contractDeployed,
-  startGeneratingContractURI,
+  generatingContractURI,
   contractDeploying,
   setStatus,
   contractDeployError,

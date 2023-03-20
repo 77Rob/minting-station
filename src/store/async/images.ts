@@ -3,7 +3,7 @@ import { AppDispatch } from "..";
 import {
   setTokenURI,
   setContractURI,
-  startGeneratingContractURI,
+  generatingContractURI,
   IContract,
 } from "../contractReducer";
 import {
@@ -158,7 +158,7 @@ export const handleCreateAndUploadMetadata = async ({
   dispatch: AppDispatch;
   contract: IContract;
 }) => {
-  dispatch(startGeneratingContractURI());
+  dispatch(generatingContractURI());
 
   const contractURIData = {
     name: contract.tokenName,
@@ -204,7 +204,7 @@ export const handleUploadMetadataAi = async ({
   dispatch: AppDispatch;
   contract: IContract;
 }) => {
-  dispatch(startGeneratingContractURI());
+  dispatch(generatingContractURI());
 
   const contractURIData = {
     name: contract.tokenName,

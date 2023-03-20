@@ -1,8 +1,4 @@
-import {
-  IContract,
-  IContractReducerState,
-  setContractURI,
-} from "./../contractReducer";
+import { IContract, setContractURI } from "./../contractReducer";
 import {
   handleCreateAndUploadMetadata,
   handleUploadMetadataAi,
@@ -24,12 +20,11 @@ import {
   contractDeployed,
   contractDeploying,
   handleLoadCollection,
-  prepareCompiler,
+  loadingCompiler,
   setCompilerReady,
   setStatus,
   submitContractValues,
 } from "../contractReducer";
-import { createCompilerInput } from "@/compiler";
 
 export const OPEN_ZEPPELIN_VERSION = "4.3.2";
 
@@ -44,7 +39,7 @@ export const prepareContract = async ({
 }) => {
   const state = getState();
   const { contract } = state;
-  dispatch(prepareCompiler());
+  dispatch(loadingCompiler());
   const contractName = getValidContractName(contract.tokenName);
   const sourceName = contractName + ".sol";
 
@@ -113,12 +108,10 @@ const initiateDeploymentTransaction = async ({
 
   try {
     const factory = new ContractFactory(abi, bytecode, signer);
-    console.log(JSON.stringify(createCompilerInput(state.compiler.files)));
     const contract = await factory.deploy(state.contract.tokenURI);
     await contract.deployed();
     dispatch(contractDeployed({ address: contract.address }));
   } catch (e) {
-    console.log("deploy failure", e);
     dispatch(contractDeployError({ error: e }));
   }
 };
