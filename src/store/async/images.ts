@@ -41,7 +41,7 @@ export const updateMetadata = async ({
   imageData: IImage;
   dispatch: AppDispatch;
 }) => {
-  const response = await axios.post(`http://localhost:5000/images/update`, {
+  await axios.post(`http://localhost:5000/images/update`, {
     headers: {
       userId: localStorage.getItem("userId"),
     },
@@ -59,7 +59,7 @@ export const updateMetadataAi = async ({
   imageData: IImage;
   dispatch: AppDispatch;
 }) => {
-  const response = await axios.post(`http://localhost:5000/images/ai/update`, {
+  await axios.post(`http://localhost:5000/images/ai/update`, {
     headers: {
       userId: localStorage.getItem("userId"),
     },
@@ -78,8 +78,7 @@ export const deleteImages = async ({
   fileNames: any;
   dispatch: AppDispatch;
 }) => {
-  console.log(fileNames);
-  const response = await axios.post("http://localhost:5000/images/delete", {
+  await axios.post("http://localhost:5000/images/delete", {
     headers: {
       userId: localStorage.getItem("userId"),
     },
@@ -87,7 +86,7 @@ export const deleteImages = async ({
       fileNames,
     },
   });
-  console.log(fileNames);
+
   dispatch(handleDeleteImages(fileNames));
 };
 
@@ -147,15 +146,15 @@ export const handleCreateAndUploadMetadata = async ({
   dispatch: AppDispatch;
   contract: IContract;
 }) => {
-  console.log("CONTRACTURI METADATA URI");
   dispatch(startGeneratingContractURI());
-  console.log(contract);
+
   const contractURIData = {
     name: contract.tokenName,
     description: contract.description,
     image: contract.image,
     external_link: contract.externalURL,
   };
+
   const contractURIRequest = await axios.post(
     `http://localhost:5000/collection/contractURI`,
     {
@@ -167,8 +166,10 @@ export const handleCreateAndUploadMetadata = async ({
       },
     }
   );
+
   console.log("contractURIRequest.data");
   console.log(contractURIRequest.data);
+
   dispatch(setContractURI(contractURIRequest.data));
 
   const metadataURIRequest = await axios.get(
@@ -179,6 +180,50 @@ export const handleCreateAndUploadMetadata = async ({
       },
     }
   );
+  const baseUri = metadataURIRequest.data as string;
+  const tokenUri = `${baseUri}/`;
+  dispatch(setTokenURI(tokenUri));
+};
+
+export const handleUploadMetadataAi = async ({
+  dispatch,
+  contract,
+}: {
+  dispatch: AppDispatch;
+  contract: IContract;
+}) => {
+  dispatch(startGeneratingContractURI());
+
+  const contractURIData = {
+    name: contract.tokenName,
+    description: contract.description,
+    image: contract.image,
+    external_link: contract.externalURL,
+  };
+
+  const contractURIRequest = await axios.post(
+    `http://localhost:5000/collection/contractURI`,
+    {
+      headers: {
+        userId: localStorage.getItem("userId"),
+      },
+      params: {
+        ...contractURIData,
+      },
+    }
+  );
+
+  dispatch(setContractURI(contractURIRequest.data));
+
+  const metadataURIRequest = await axios.get(
+    `http://localhost:5000/images/ai/metadataURI`,
+    {
+      headers: {
+        userId: localStorage.getItem("userId"),
+      },
+    }
+  );
+
   const baseUri = metadataURIRequest.data as string;
   const tokenUri = `${baseUri}/`;
   dispatch(setTokenURI(tokenUri));

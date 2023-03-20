@@ -109,7 +109,7 @@ const Images = () => {
         </div>
       </div>
       <div className="col-span-2">
-        <ContractSettings collectionType={CollectionType.ImagesProvided} />
+        <ContractSettings collectionType={CollectionType.AiGenerated} />
       </div>
       <div className="flex items-center justify-center"></div>
     </div>

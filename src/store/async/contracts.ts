@@ -3,7 +3,10 @@ import {
   IContractReducerState,
   setContractURI,
 } from "./../contractReducer";
-import { handleCreateAndUploadMetadata } from "./images";
+import {
+  handleCreateAndUploadMetadata,
+  handleUploadMetadataAi,
+} from "./images";
 import {
   downloadDependenciesForSource,
   generateContractSource,
@@ -172,6 +175,9 @@ const handleMetadata = async ({ dispatch, getState, collectionType }: any) => {
   }
   if (collectionType == CollectionType.ImagesProvided) {
     await handleCreateAndUploadMetadata({ dispatch, contract: state.contract });
+  }
+  if (collectionType == CollectionType.AiGenerated) {
+    await handleUploadMetadataAi({ dispatch, contract: state.contract });
   }
 };
 
