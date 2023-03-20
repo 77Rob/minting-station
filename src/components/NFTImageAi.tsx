@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/store";
 import { IImage, deselectImage, selectImage } from "@/store/imagesReducer";
-import { updateMetadata } from "@/store/async/images";
+import { updateMetadata, updateMetadataAi } from "@/store/async/images";
 import { useState } from "react";
 import { AnimatePresence, motion, useAnimation } from "framer-motion";
 import { Field, Form, Formik } from "formik";
@@ -13,7 +13,8 @@ import { AttributesField } from "./AttributesField";
 type INFTImage = IImage & {
   columns: number;
 };
-export const NFTImage = ({
+
+export const NFTImageAi = ({
   fileName,
   name,
   url,
@@ -33,7 +34,7 @@ export const NFTImage = ({
 
   const NFTHeader = () => {
     return (
-      <div className="flex justify-between items-center px-2 py-1 border-2 border-gray-600 rounded-t-xl">
+      <div className="flex justify-between items-center px-2 py-1 border-2 border-gray-600  rounded-t-xl">
         <input
           className="bg-inherit w-6 h-6 border-white border-2 rounded-md ring-0 checked:text-white checked:bg-gray-100 checkbox-fix focus:ring-0 cursor-pointer"
           type="checkbox"
@@ -46,6 +47,7 @@ export const NFTImage = ({
             }
           }}
         />
+
         <h1 className="text-xl font-bold overflow-x-auto whitespace-nowrap mx-2">
           {name}
         </h1>
@@ -90,7 +92,7 @@ export const NFTImage = ({
               attributes: attributes || [],
             }}
             onSubmit={(values) => {
-              updateMetadata({
+              updateMetadataAi({
                 imageData: {
                   fileName,
                   name: values.name,
