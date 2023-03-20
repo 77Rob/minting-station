@@ -1,5 +1,5 @@
 import ContractSettings from "@/components/ContractSettings";
-import { CollectionType } from "@/store/contractReducer";
+import { CollectionType } from "@/store/reducers/contractReducer";
 
 const BaseUri = () => {
   return (

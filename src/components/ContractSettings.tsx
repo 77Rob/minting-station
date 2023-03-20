@@ -1,17 +1,17 @@
 import { useCompiler } from "@/compiler";
 import OptionalInputField from "@/components/OptionalInputField";
 import SwitchField from "@/components/SwitchField";
-import { useAppDispatch, useAppSelector } from "@/store";
+import { AppDispatch, useAppDispatch, useAppSelector } from "@/store";
 import {
   deployContract,
   loadCollection,
   uploadImage,
-} from "@/store/async/contracts";
+} from "@/store/utils/contracts";
 import {
   CollectionType,
   initialContractState,
   submitContractValues,
-} from "@/store/contractReducer";
+} from "@/store/reducers/contractReducer";
 import { CloudIcon } from "@heroicons/react/24/solid";
 import { Field, Form, Formik } from "formik";
 import { LayoutGroup } from "framer-motion";
@@ -23,6 +23,7 @@ import FileUpload from "./FileUpload";
 import LabelField from "./LabelField";
 import { withFramerMotion } from "./withFramerMotion";
 import { useSnackbar } from "notistack";
+import { IContractReducerState } from "../store/reducers/contractReducer";
 
 type ContractSettingsProps = {
   collectionType: CollectionType;
@@ -40,37 +41,13 @@ const ContractSettings = ({ collectionType }: ContractSettingsProps) => {
   const [showDeploymentModal, setShowDeploymentModal] = useState(false);
   const [submit, setSubmit] = useState(false);
 
-  const getState = () => {
+  const getState = (): IContractReducerState & { enqueueSnackbar: any } => {
     return { ...state, enqueueSnackbar };
   };
 
   useEffect(() => {
     loadCollection({ dispatch });
   }, []);
-
-  const UploadImage = () => {
-    return (
-      <FileUpload
-        className="col-span-2 h-56 justify-center border-solid"
-        onFiles={(files) => {
-          uploadImage({ images: files, dispatch });
-        }}
-      >
-        <span className="flex items-center text-center flex-col justify-center">
-          <CloudIcon className="w-12 mb-2" />
-          <span className="text-xl font-semibold">
-            Upload Collection Banner
-          </span>
-          <span className="text-sm text-gray-300 mb-6">
-            This image will be displayed on collection page and NFT marketplaces
-          </span>
-          <span className="text-xs text-gray-400">
-            Accepted formats: PNG, JPG, GIF, WEBP,
-          </span>
-        </span>
-      </FileUpload>
-    );
-  };
 
   return (
     <div className="card py-6 w-full px-12" id="ultimateRef">
@@ -81,7 +58,6 @@ const ContractSettings = ({ collectionType }: ContractSettingsProps) => {
         initialValues={initialContractState}
         onSubmit={async (values: any, actions) => {
           if (submit) {
-            console.log(values);
             setShowDeploymentModal(true);
             dispatch(submitContractValues(values));
             await deployContract({
@@ -111,19 +87,10 @@ const ContractSettings = ({ collectionType }: ContractSettingsProps) => {
                 />
               </div>
             ) : (
-              <UploadImage />
+              <UploadCollectionImage dispatch={dispatch} getState={getState} />
             )}
           </div>
-          {/* <input
-            multiple
-            onChange={(e) => {
-              console.log(e.target.files);
-              uploadImage({ images: e.target.files, dispatch });
-            }}
-            type="file"
-            data-testid="file-input"
-            name="file_upload"
-          /> */}
+
           <Field
             name="tokenName"
             className="input"
@@ -300,3 +267,39 @@ const ContractSettings = ({ collectionType }: ContractSettingsProps) => {
   );
 };
 export default ContractSettings;
+
+type UploadCollectionImageProps = {
+  dispatch: AppDispatch;
+  getState: () => IContractReducerState & {
+    enqueueSnackbar: any;
+  };
+};
+
+const UploadCollectionImage = ({
+  dispatch,
+  getState,
+}: UploadCollectionImageProps) => {
+  return () => {
+    return (
+      <FileUpload
+        className="col-span-2 h-56 justify-center border-solid"
+        onFiles={(files) => {
+          uploadImage({ images: files, dispatch, getState });
+        }}
+      >
+        <span className="flex items-center text-center flex-col justify-center">
+          <CloudIcon className="w-12 mb-2" />
+          <span className="text-xl font-semibold">
+            Upload Collection Banner
+          </span>
+          <span className="text-sm text-gray-300 mb-6">
+            This image will be displayed on collection page and NFT marketplaces
+          </span>
+          <span className="text-xs text-gray-400">
+            Accepted formats: PNG, JPG, GIF, WEBP,
+          </span>
+        </span>
+      </FileUpload>
+    );
+  };
+};

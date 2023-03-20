@@ -114,12 +114,19 @@ const uploadCollectionImageRequest = async (formData: FormData) => {
   );
 };
 
+const saveCollectionRequest = async (collectionData: any) => {
+  return await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/collection/abi`, {
+    params: collectionData,
+  });
+};
+
 export {
   loadAiGeneratedImagesRequest,
   loagImagesRequest,
   generateImagesAiRequest,
   uploadCollectionImageRequest,
   generateMetadataUriRequest,
+  saveCollectionRequest,
   uploadImagesRequest,
   loadCollectionRequest,
   generateContractUriRequest,

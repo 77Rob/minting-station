@@ -1,4 +1,4 @@
-import { ContractState } from "@/store/contractReducer";
+import { ContractState } from "@/store/reducers/contractReducer";
 import { generateActivation } from "./generate/activation";
 import { generateAllowlist } from "./generate/allowlist";
 import { generateImports } from "./generate/imports";

@@ -6,8 +6,8 @@ import {
   deleteImages,
   generateImagesAi,
   loadImagesAi,
-} from "@/store/async/images";
-import { CollectionType } from "@/store/contractReducer";
+} from "@/store/utils/images";
+import { CollectionType } from "@/store/reducers/contractReducer";
 import { deselectAllImages, selectAllImages } from "@/store/imagesReducer";
 import { TrashIcon } from "@heroicons/react/24/solid";
 import { useSnackbar } from "notistack";

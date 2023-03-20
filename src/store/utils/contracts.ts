@@ -1,16 +1,10 @@
-import { IContract, setContractURI } from "./../contractReducer";
-import {
-  handleCreateAndUploadMetadata,
-  handleUploadMetadataAi,
-} from "./images";
 import {
   downloadDependenciesForSource,
   generateContractSource,
   getValidContractName,
 } from "@/solidity-codegen";
-import { AppDispatch } from "..";
 import { ContractFactory } from "ethers";
-import axios from "axios";
+import { AppDispatch } from "..";
 import {
   CollectionType,
   DeploymentStatus,
@@ -24,10 +18,16 @@ import {
   setCompilerReady,
   setStatus,
   submitContractValues,
-} from "../contractReducer";
+} from "../reducers/contractReducer";
+import { setContractURI } from "../reducers/contractReducer";
+import {
+  handleCreateAndUploadMetadata,
+  handleUploadMetadataAi,
+} from "./images";
 import {
   generateContractUriRequest,
   loadCollectionRequest,
+  saveCollectionRequest,
   uploadCollectionImageRequest,
 } from "./requests";
 
@@ -90,9 +90,7 @@ const uploadMetadata = async ({ dispatch, getState, signer }: any) => {
     attributes: contract.attributes,
   };
 
-  await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/collection/abi`, {
-    params: metadataFile,
-  });
+  await saveCollectionRequest(metadataFile);
 };
 
 const initiateDeploymentTransaction = async ({
@@ -102,7 +100,6 @@ const initiateDeploymentTransaction = async ({
 }: any) => {
   const state = getState();
   const { enqueSnackbar } = state;
-
   const { sourceName, contractName, contracts } = state.compiler;
   const mainContract = contracts[sourceName][contractName];
   const {
@@ -114,11 +111,16 @@ const initiateDeploymentTransaction = async ({
 
   try {
     const factory = new ContractFactory(abi, bytecode, signer);
+
     const contract = await factory.deploy(state.contract.tokenURI);
     await contract.deployed();
+
     dispatch(contractDeployed({ address: contract.address }));
   } catch (e) {
     dispatch(contractDeployError({ error: e }));
+    enqueSnackbar("Error deploying contract please try again", {
+      variant: "error",
+    });
   }
 };
 
@@ -135,17 +137,29 @@ export const loadCollection = async ({
 export const uploadImage = async ({
   images,
   dispatch,
+  getState,
 }: {
   images: any;
   dispatch: AppDispatch;
+  getState: any;
 }) => {
-  const formData = new FormData();
-  Object.keys(images).forEach((key) => {
-    formData.append("image", images[key]);
-  });
+  const state = getState();
+  const { enqueSnackbar } = state;
+  try {
+    const formData = new FormData();
+    Object.keys(images).forEach((key) => {
+      formData.append("image", images[key]);
+    });
 
-  const response = await uploadCollectionImageRequest(formData);
-  dispatch(addImage(response.data));
+    const response = await uploadCollectionImageRequest(formData);
+
+    dispatch(addImage(response.data));
+  } catch (e) {
+    console.error(e);
+    enqueSnackbar("Error uploading collection image please try again", {
+      variant: "error",
+    });
+  }
 };
 
 const handleMetadata = async ({ dispatch, getState, collectionType }: any) => {
@@ -155,11 +169,19 @@ const handleMetadata = async ({ dispatch, getState, collectionType }: any) => {
       getState,
     });
   }
+
   if (collectionType == CollectionType.ImagesProvided) {
-    await handleCreateAndUploadMetadata({ dispatch, getState });
+    await handleCreateAndUploadMetadata({
+      dispatch,
+      getState,
+    });
   }
+
   if (collectionType == CollectionType.AiGenerated) {
-    await handleUploadMetadataAi({ dispatch, getState });
+    await handleUploadMetadataAi({
+      dispatch,
+      getState,
+    });
   }
 };
 
@@ -180,6 +202,7 @@ export const createContractURITokenURIProvided = async ({
       image: contract.image,
       external_link: contract.externalURL,
     });
+
     dispatch(setContractURI(response.data));
   } catch (e) {
     console.error(e);

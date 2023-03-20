@@ -1,6 +1,6 @@
 import { Action, createSlice } from "@reduxjs/toolkit";
 import { CompilerOutput } from "hardhat/types";
-import { useAppSelector } from ".";
+import { useAppSelector } from "..";
 
 export interface IContract {
   image?: string;

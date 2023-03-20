@@ -1,4 +1,4 @@
-import { ContractState } from "@/store/contractReducer";
+import { ContractState } from "@/store/reducers/contractReducer";
 import {
   assignmentExpression,
   AST,

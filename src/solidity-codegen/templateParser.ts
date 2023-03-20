@@ -1,5 +1,5 @@
 import { Lexer, rule, state, Token } from "language-tools";
-import { TokenParameter } from "@/store/contractReducer";
+import { TokenParameter } from "@/store/reducers/contractReducer";
 
 export function encodeQueryParameters(
   parameters: Record<string, string | number | boolean>

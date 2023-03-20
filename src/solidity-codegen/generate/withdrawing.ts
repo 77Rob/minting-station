@@ -1,4 +1,4 @@
-import { PayoutDestination } from "@/store/contractReducer";
+import { PayoutDestination } from "@/store/reducers/contractReducer";
 import { ContractContext } from "..";
 import {
   AST,

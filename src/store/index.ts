@@ -1,7 +1,7 @@
-import { applyMiddleware, configureStore } from "@reduxjs/toolkit";
+import { configureStore } from "@reduxjs/toolkit";
 import thunkMiddleware from "redux-thunk";
-import imagesReducer from "./imagesReducer";
-import contractReducer from "./contractReducer";
+import imagesReducer from "./reducers/imagesReducer";
+import contractReducer from "./reducers/contractReducer";
 
 const store = configureStore({
   reducer: {

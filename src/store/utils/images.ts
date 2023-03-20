@@ -5,7 +5,7 @@ import {
   setContractURI,
   generatingContractURI,
   IContract,
-} from "../contractReducer";
+} from "../reducers/contractReducer";
 import {
   IImage,
   handleAddImages,

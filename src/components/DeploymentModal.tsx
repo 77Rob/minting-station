@@ -2,7 +2,7 @@ import { useAppSelector } from "@/store";
 import {
   DeploymentStatus,
   translateDeploymentStatus,
-} from "@/store/contractReducer";
+} from "@/store/reducers/contractReducer";
 import Button from "./Button";
 import { Spinner, Modal } from "flowbite-react";
 import Link from "next/link";
