@@ -52,6 +52,24 @@ export const updateMetadata = async ({
 
   dispatch(handleUpdateMetadata(imageData));
 };
+export const updateMetadataAi = async ({
+  imageData,
+  dispatch,
+}: {
+  imageData: IImage;
+  dispatch: AppDispatch;
+}) => {
+  const response = await axios.post(`http://localhost:5000/images/ai/update`, {
+    headers: {
+      userId: localStorage.getItem("userId"),
+    },
+    params: {
+      imageData,
+    },
+  });
+
+  dispatch(handleUpdateMetadata(imageData));
+};
 
 export const deleteImages = async ({
   fileNames,
@@ -98,9 +116,11 @@ export const uploadImages = async ({
 export const generateImagesAi = async ({
   prompt,
   dispatch,
+  enqueueSnackbar,
 }: {
   prompt: string;
   dispatch: AppDispatch;
+  enqueueSnackbar: any;
 }) => {
   const response = await axios.post(`http://localhost:5000/images/generateai`, {
     headers: {
@@ -110,8 +130,14 @@ export const generateImagesAi = async ({
       prompt,
     },
   });
-
-  dispatch(handleAddImages(response.data));
+  if (response.data.type == "error") {
+    enqueueSnackbar(response.data.message, {
+      variant: "error",
+    });
+    return;
+  } else {
+    dispatch(handleAddImages([response.data]));
+  }
 };
 
 export const handleCreateAndUploadMetadata = async ({

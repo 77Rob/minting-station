@@ -19,11 +19,14 @@ import { TrashIcon } from "@heroicons/react/24/solid";
 import Button from "@/components/Button";
 import { CollectionType } from "@/store/contractReducer";
 import { NFTImage } from "../../components/NFTImage";
+import { useSnackbar } from "notistack";
+import { NFTImageAi } from "@/components/NFTImageAi";
 
 const Images = () => {
   const dispatch = useAppDispatch();
   const imagesState = useAppSelector((state) => state.images);
   const [prompt, setPrompt] = useState("");
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     loadImagesAi({ dispatch });
@@ -46,7 +49,7 @@ const Images = () => {
             <button
               className="btn-primary "
               onClick={() => {
-                generateImagesAi({ prompt, dispatch });
+                generateImagesAi({ prompt, dispatch, enqueueSnackbar });
                 setPrompt("");
               }}
             >
@@ -100,7 +103,7 @@ const Images = () => {
           >
             {imagesState.images &&
               imagesState.images?.map((image, index) => (
-                <NFTImage key={image.fileName} {...image} columns={columns} />
+                <NFTImageAi key={image.fileName} {...image} columns={columns} />
               ))}
           </div>
         </div>
