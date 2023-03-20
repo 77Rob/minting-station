@@ -1,30 +1,23 @@
-import { SnackbarProvider, useSnackbar } from "notistack";
-import "../styles/globals.css";
-import "@rainbow-me/rainbowkit/styles.css";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
+import store from "@/store";
 import {
+  Chain,
+  RainbowKitProvider,
   darkTheme,
   getDefaultWallets,
-  RainbowKitProvider,
-  Chain,
 } from "@rainbow-me/rainbowkit";
+import "@rainbow-me/rainbowkit/styles.css";
 import type { AppProps } from "next/app";
-import { configureChains, createClient, WagmiConfig } from "wagmi";
-import { arbitrum, goerli, mainnet, optimism, polygon } from "wagmi/chains";
-import { publicProvider } from "wagmi/providers/public";
-import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import { SnackbarProvider } from "notistack";
 import { useEffect } from "react";
-import { v4 as uuidv4 } from "uuid";
 import { Provider } from "react-redux";
-import store from "@/store";
-import { Flowbite } from "flowbite-react";
+import { v4 as uuidv4 } from "uuid";
+import { WagmiConfig, configureChains, createClient } from "wagmi";
+import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
+import "../styles/globals.css";
 
-const DeploymentModal = () => {
-  return <div className="">Deployment Modal</div>;
-};
-
-const mantleTestnetChain: Chain = {
+const MANTLE_TESTNET_CHAIN: Chain = {
   id: 5001,
   nativeCurrency: {
     decimals: 18,
@@ -44,7 +37,7 @@ const mantleTestnetChain: Chain = {
 };
 
 const { chains, provider, webSocketProvider } = configureChains(
-  [mantleTestnetChain],
+  [MANTLE_TESTNET_CHAIN],
   [
     jsonRpcProvider({
       rpc: (chain) => ({
@@ -55,32 +48,35 @@ const { chains, provider, webSocketProvider } = configureChains(
 );
 
 const { connectors } = getDefaultWallets({
-  appName: "RainbowKit App",
+  appName: "Minting Station",
   chains,
 });
 
-const wagmiClient = createClient({
+const WAGMI_CLIENT = createClient({
   autoConnect: true,
   connectors,
   provider,
   webSocketProvider,
 });
 
+const USER_ID_KEY = "userId";
+const ACCENT_COLOR = "#1e4fff";
+
 function MyApp({ Component, pageProps }: AppProps) {
   useEffect(() => {
-    if (localStorage.getItem("userId") === null) {
+    if (localStorage.getItem(USER_ID_KEY) === null) {
       const uuid = uuidv4();
-      localStorage.setItem("userId", uuid);
+      localStorage.setItem(USER_ID_KEY, uuid);
     }
-  });
+  }, []);
 
   return (
     <Provider store={store}>
-      <WagmiConfig client={wagmiClient}>
+      <WagmiConfig client={WAGMI_CLIENT}>
         <RainbowKitProvider
           chains={chains}
           theme={darkTheme({
-            accentColor: "#1e4fff",
+            accentColor: ACCENT_COLOR,
             borderRadius: "medium",
           })}
         >

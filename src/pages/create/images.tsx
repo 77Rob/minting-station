@@ -1,18 +1,13 @@
-import FileUpload from "@/components/FileUpload";
-import { ContractSettings } from "../../components/ContractSettings";
-import { useAppDispatch, useAppSelector } from "@/store";
-import {
-  Image,
-  deselectAllImages,
-  selectAllImages,
-} from "@/store/imagesReducer";
-import { deleteImages, loadImages, uploadImages } from "@/store/async/images";
-import { useEffect, useState } from "react";
-import { FieldInputProps, FormikProps } from "formik";
-import { RowsIcon, FourColumnsIcon } from "@/assets";
-import { TrashIcon } from "@heroicons/react/24/solid";
+import { FourColumnsIcon, RowsIcon } from "@/assets";
 import Button from "@/components/Button";
+import FileUpload from "@/components/FileUpload";
+import { useAppDispatch, useAppSelector } from "@/store";
+import { deleteImages, loadImages, uploadImages } from "@/store/async/images";
 import { CollectionType } from "@/store/contractReducer";
+import { deselectAllImages, selectAllImages } from "@/store/imagesReducer";
+import { TrashIcon } from "@heroicons/react/24/solid";
+import { useEffect, useState } from "react";
+import { ContractSettings } from "../../components/ContractSettings";
 import { NFTImage } from "../../components/NFTImage";
 
 const Images = () => {
@@ -79,10 +74,9 @@ const Images = () => {
               columns == 1 ? "gird-cols-1" : "grid-cols-4"
             } gap-1`}
           >
-            {imagesState.images &&
-              imagesState.images?.map((image, index) => (
-                <NFTImage key={image.fileName} {...image} columns={columns} />
-              ))}
+            {imagesState.images?.map((image, index) => (
+              <NFTImage key={image.fileName} {...image} columns={columns} />
+            ))}
           </div>
         </div>
       </div>

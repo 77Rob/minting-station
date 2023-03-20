@@ -1,10 +1,7 @@
-import Head from "next/head";
-import Image from "next/image";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import AnimatedLogo from "@/components/AnimatedLogo";
-import Link from "next/link";
-import { motion } from "framer-motion";
 import Button from "@/components/Button";
+import Head from "next/head";
+import Link from "next/link";
 
 export default function Home() {
   return (

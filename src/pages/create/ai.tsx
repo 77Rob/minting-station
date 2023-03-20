@@ -1,28 +1,20 @@
-import FileUpload from "@/components/FileUpload";
-import { ContractSettings } from "../../components/ContractSettings";
+import { FourColumnsIcon, RowsIcon } from "@/assets";
+import Button from "@/components/Button";
+import { NFTImageAi } from "@/components/NFTImageAi";
 import { useAppDispatch, useAppSelector } from "@/store";
-import {
-  Image,
-  deselectAllImages,
-  selectAllImages,
-} from "@/store/imagesReducer";
 import {
   deleteImages,
   generateImagesAi,
   loadImagesAi,
-  uploadImages,
 } from "@/store/async/images";
-import { useEffect, useState } from "react";
-import { FieldInputProps, FormikProps } from "formik";
-import { RowsIcon, FourColumnsIcon } from "@/assets";
-import { TrashIcon } from "@heroicons/react/24/solid";
-import Button from "@/components/Button";
 import { CollectionType } from "@/store/contractReducer";
-import { NFTImage } from "../../components/NFTImage";
+import { deselectAllImages, selectAllImages } from "@/store/imagesReducer";
+import { TrashIcon } from "@heroicons/react/24/solid";
 import { useSnackbar } from "notistack";
-import { NFTImageAi } from "@/components/NFTImageAi";
+import { useEffect, useState } from "react";
+import { ContractSettings } from "../../components/ContractSettings";
 
-const Images = () => {
+const AIGeneratedImages = () => {
   const dispatch = useAppDispatch();
   const imagesState = useAppSelector((state) => state.images);
   const [prompt, setPrompt] = useState("");
@@ -56,7 +48,9 @@ const Images = () => {
               Generate
             </button>
           </div>
+
           <div className="col-span-1" />
+
           <div className="space-y-2 items-end flex flex-col col-span-2">
             <Button
               className="w-[65%] btn-red px-3 flex text-center
@@ -87,6 +81,7 @@ const Images = () => {
             </Button>
           </div>
         </div>
+
         <div className="card py-1 w-full overflow-auto h-screen">
           <div className="flex items-center space-x-1 pb-1 justify-start">
             <Button className="btn-primary p-1" onClick={() => setColumns(4)}>
@@ -96,24 +91,26 @@ const Images = () => {
               <RowsIcon />
             </Button>
           </div>
+
           <div
             className={`grid gap-x-2 gap-y-3 ${
               columns == 1 ? "gird-cols-1" : "grid-cols-4"
             } gap-1`}
           >
-            {imagesState.images &&
-              imagesState.images?.map((image, index) => (
-                <NFTImageAi key={image.fileName} {...image} columns={columns} />
-              ))}
+            {imagesState.images?.map((image, index) => (
+              <NFTImageAi key={image.fileName} {...image} columns={columns} />
+            ))}
           </div>
         </div>
       </div>
+
       <div className="col-span-2">
         <ContractSettings collectionType={CollectionType.AiGenerated} />
       </div>
+
       <div className="flex items-center justify-center"></div>
     </div>
   );
 };
 
-export default Images;
+export default AIGeneratedImages;

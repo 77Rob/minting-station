@@ -1,11 +1,10 @@
-import { Html, Head, Main, NextScript } from "next/document";
-import Header from "@/components/Header";
-import DeploymentModal from "@/components/DeploymentModal";
+import { Head, Html, Main, NextScript } from "next/document";
 
 export default function Document() {
   return (
     <Html lang="en">
       <Head />
+      <title>Minting Station</title>
       <body
         className="bg-base-300 bg-top bg-repeat-y color-white"
         style={{

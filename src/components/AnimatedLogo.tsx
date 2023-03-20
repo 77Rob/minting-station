@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 const frames = [
   "/home/animation/1.png",
   "/home/animation/2.png",
