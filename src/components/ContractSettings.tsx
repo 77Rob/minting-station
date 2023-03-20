@@ -22,6 +22,7 @@ import DeploymentModal from "./DeploymentModal";
 import FileUpload from "./FileUpload";
 import LabelField from "./LabelField";
 import { withFramerMotion } from "./withFramerMotion";
+import { useSnackbar } from "notistack";
 
 type ContractSettingsProps = {
   collectionType: CollectionType;
@@ -33,13 +34,14 @@ const ContractSettings = ({ collectionType }: ContractSettingsProps) => {
   const compiler = useCompiler();
   const provider = useProvider();
   const { data: signer } = useSigner();
+  const { enqueueSnackbar } = useSnackbar();
 
   const state = useAppSelector((state) => state.contract);
   const [showDeploymentModal, setShowDeploymentModal] = useState(false);
   const [submit, setSubmit] = useState(false);
 
   const getState = () => {
-    return state;
+    return { ...state, enqueueSnackbar };
   };
 
   useEffect(() => {

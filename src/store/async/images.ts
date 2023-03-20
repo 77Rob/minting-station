@@ -13,34 +13,32 @@ import {
   handleLoadImages,
   handleUpdateMetadata,
 } from "../imagesReducer";
+import {
+  generateContractUriRequest,
+  generateImagesAiRequest,
+  generateMetadataUriAiGeneratedImagesRequest,
+  generateMetadataUriRequest,
+  loadAiGeneratedImagesRequest,
+  loagImagesRequest,
+} from "./requests";
 
-export const loadImages = async ({ dispatch }: { dispatch: AppDispatch }) => {
-  const response = await axios.get(
-    `${process.env.NEXT_PUBLIC_API_URL}/images`,
-    {
-      headers: {
-        userId: localStorage.getItem("userId"),
-      },
-    }
-  );
+type ThunkActionProps = {
+  dispatch: AppDispatch;
+  getState?: any;
+};
+
+const loadImages = async ({ dispatch, getState }: ThunkActionProps) => {
+  const response = await loagImagesRequest();
+  dispatch(handleLoadImages(response.data));
+};
+
+const loadImagesAi = async ({ dispatch }: ThunkActionProps) => {
+  const response = await loadAiGeneratedImagesRequest();
 
   dispatch(handleLoadImages(response.data));
 };
 
-export const loadImagesAi = async ({ dispatch }: { dispatch: AppDispatch }) => {
-  const response = await axios.get(
-    `${process.env.NEXT_PUBLIC_API_URL}/images/ai`,
-    {
-      headers: {
-        userId: localStorage.getItem("userId"),
-      },
-    }
-  );
-
-  dispatch(handleLoadImages(response.data));
-};
-
-export const updateMetadata = async ({
+const updateMetadata = async ({
   imageData,
   dispatch,
 }: {
@@ -58,7 +56,8 @@ export const updateMetadata = async ({
 
   dispatch(handleUpdateMetadata(imageData));
 };
-export const updateMetadataAi = async ({
+
+const updateMetadataAi = async ({
   imageData,
   dispatch,
 }: {
@@ -77,7 +76,7 @@ export const updateMetadataAi = async ({
   dispatch(handleUpdateMetadata(imageData));
 };
 
-export const deleteImages = async ({
+const deleteImages = async ({
   fileNames,
   dispatch,
 }: {
@@ -96,7 +95,7 @@ export const deleteImages = async ({
   dispatch(handleDeleteImages(fileNames));
 };
 
-export const uploadImages = async ({
+const uploadImages = async ({
   images,
   dispatch,
 }: {
@@ -121,7 +120,7 @@ export const uploadImages = async ({
   dispatch(handleAddImages(response.data));
 };
 
-export const generateImagesAi = async ({
+const generateImagesAi = async ({
   prompt,
   dispatch,
   enqueueSnackbar,
@@ -130,17 +129,8 @@ export const generateImagesAi = async ({
   dispatch: AppDispatch;
   enqueueSnackbar: any;
 }) => {
-  const response = await axios.post(
-    `${process.env.NEXT_PUBLIC_API_URL}/images/generateai`,
-    {
-      headers: {
-        userId: localStorage.getItem("userId"),
-      },
-      params: {
-        prompt,
-      },
-    }
-  );
+  const response = await generateImagesAiRequest(prompt);
+
   if (response.data.type == "error") {
     enqueueSnackbar(response.data.message, {
       variant: "error",
@@ -151,92 +141,95 @@ export const generateImagesAi = async ({
   }
 };
 
-export const handleCreateAndUploadMetadata = async ({
+const handleCreateAndUploadMetadata = async ({
   dispatch,
-  contract,
+  getState,
 }: {
   dispatch: AppDispatch;
-  contract: IContract;
+  getState: any;
 }) => {
+  const state = getState();
+  const { contract, enqueueSnackbar } = state;
+
   dispatch(generatingContractURI());
 
-  const contractURIData = {
-    name: contract.tokenName,
-    description: contract.description,
-    image: contract.image,
-    external_link: contract.externalURL,
-  };
+  try {
+    const contractURIRequest = await generateContractUriRequest({
+      name: contract.tokenName,
+      description: contract.description,
+      image: contract.image,
+      external_link: contract.externalURL,
+    });
 
-  const contractURIRequest = await axios.post(
-    `${process.env.NEXT_PUBLIC_API_URL}/collection/contractURI`,
-    {
-      headers: {
-        userId: localStorage.getItem("userId"),
-      },
-      params: {
-        ...contractURIData,
-      },
-    }
-  );
+    dispatch(setContractURI(contractURIRequest.data));
+  } catch (e) {
+    console.log(e);
+    enqueueSnackbar("Error creating contract URI", {
+      variant: "error",
+    });
+  }
 
-  console.log("contractURIRequest.data");
-  console.log(contractURIRequest.data);
+  try {
+    const metadataURIRequest = await generateMetadataUriRequest();
+    const baseUri = metadataURIRequest.data as string;
+    const tokenUri = `${baseUri}/`;
 
-  dispatch(setContractURI(contractURIRequest.data));
-
-  const metadataURIRequest = await axios.get(
-    `${process.env.NEXT_PUBLIC_API_URL}/images/metadataURI`,
-    {
-      headers: {
-        userId: localStorage.getItem("userId"),
-      },
-    }
-  );
-  const baseUri = metadataURIRequest.data as string;
-  const tokenUri = `${baseUri}/`;
-  dispatch(setTokenURI(tokenUri));
+    dispatch(setTokenURI(tokenUri));
+  } catch (e) {
+    console.log(e);
+    enqueueSnackbar("Error creating token URI", {
+      variant: "error",
+    });
+  }
 };
 
-export const handleUploadMetadataAi = async ({
+const handleUploadMetadataAi = async ({
   dispatch,
-  contract,
-}: {
-  dispatch: AppDispatch;
-  contract: IContract;
-}) => {
+  getState,
+}: ThunkActionProps) => {
   dispatch(generatingContractURI());
 
-  const contractURIData = {
-    name: contract.tokenName,
-    description: contract.description,
-    image: contract.image,
-    external_link: contract.externalURL,
-  };
+  const state = getState();
+  const { contract, enqueueSnackbar } = state;
 
-  const contractURIRequest = await axios.post(
-    `${process.env.NEXT_PUBLIC_API_URL}/collection/contractURI`,
-    {
-      headers: {
-        userId: localStorage.getItem("userId"),
-      },
-      params: {
-        ...contractURIData,
-      },
-    }
-  );
+  try {
+    const contractURIRequest = await generateContractUriRequest({
+      name: contract.tokenName,
+      description: contract.description,
+      image: contract.image,
+      external_link: contract.externalURL,
+    });
 
-  dispatch(setContractURI(contractURIRequest.data));
+    dispatch(setContractURI(contractURIRequest.data));
+  } catch (e) {
+    console.log(e);
+    enqueueSnackbar("Error creating contract URI", {
+      variant: "error",
+    });
+  }
 
-  const metadataURIRequest = await axios.get(
-    `${process.env.NEXT_PUBLIC_API_URL}/images/ai/metadataURI`,
-    {
-      headers: {
-        userId: localStorage.getItem("userId"),
-      },
-    }
-  );
+  try {
+    const metadataURIRequest =
+      await generateMetadataUriAiGeneratedImagesRequest();
 
-  const baseUri = metadataURIRequest.data as string;
-  const tokenUri = `${baseUri}/`;
-  dispatch(setTokenURI(tokenUri));
+    const baseUri = metadataURIRequest.data as string;
+    const tokenUri = `${baseUri}/`;
+    dispatch(setTokenURI(tokenUri));
+  } catch (e) {
+    enqueueSnackbar("Error creating token URI", {
+      variant: "error",
+    });
+  }
+};
+
+export {
+  loadImages,
+  loadImagesAi,
+  updateMetadata,
+  updateMetadataAi,
+  deleteImages,
+  uploadImages,
+  generateImagesAi,
+  handleCreateAndUploadMetadata,
+  handleUploadMetadataAi,
 };

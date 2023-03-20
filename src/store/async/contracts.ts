@@ -25,6 +25,11 @@ import {
   setStatus,
   submitContractValues,
 } from "../contractReducer";
+import {
+  generateContractUriRequest,
+  loadCollectionRequest,
+  uploadCollectionImageRequest,
+} from "./requests";
 
 export const OPEN_ZEPPELIN_VERSION = "4.3.2";
 
@@ -73,8 +78,6 @@ const uploadMetadata = async ({ dispatch, getState, signer }: any) => {
   } = mainContract;
 
   const { deploymentAddress } = state;
-  console.log(abi);
-  console.log(deploymentAddress);
 
   const metadataFile = {
     abi,
@@ -91,12 +94,15 @@ const uploadMetadata = async ({ dispatch, getState, signer }: any) => {
     params: metadataFile,
   });
 };
+
 const initiateDeploymentTransaction = async ({
   dispatch,
   getState,
   signer,
 }: any) => {
   const state = getState();
+  const { enqueSnackbar } = state;
+
   const { sourceName, contractName, contracts } = state.compiler;
   const mainContract = contracts[sourceName][contractName];
   const {
@@ -121,15 +127,8 @@ export const loadCollection = async ({
 }: {
   dispatch: AppDispatch;
 }) => {
-  const response = await axios.get(
-    `${process.env.NEXT_PUBLIC_API_URL}/collection`,
-    {
-      headers: {
-        userId: localStorage.getItem("userId"),
-      },
-    }
-  );
-  console.log(response.data);
+  const response = await loadCollectionRequest();
+
   dispatch(handleLoadCollection(response.data));
 };
 
@@ -145,60 +144,49 @@ export const uploadImage = async ({
     formData.append("image", images[key]);
   });
 
-  const response = await axios.post(
-    `${process.env.NEXT_PUBLIC_API_URL}/collection/image`,
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        userId: localStorage.getItem("userId"),
-      },
-    }
-  );
-  console.log(response.data);
+  const response = await uploadCollectionImageRequest(formData);
   dispatch(addImage(response.data));
 };
 
 const handleMetadata = async ({ dispatch, getState, collectionType }: any) => {
-  const state = getState();
-  if (collectionType === CollectionType.MetadataProvided) {
+  if (collectionType === CollectionType.BaseURIProvided) {
     await createContractURITokenURIProvided({
       dispatch,
-      contract: state.contract,
+      getState,
     });
   }
-  if (collectionType === CollectionType.BaseURIProvided) {
-  }
   if (collectionType == CollectionType.ImagesProvided) {
-    await handleCreateAndUploadMetadata({ dispatch, contract: state.contract });
+    await handleCreateAndUploadMetadata({ dispatch, getState });
   }
   if (collectionType == CollectionType.AiGenerated) {
-    await handleUploadMetadataAi({ dispatch, contract: state.contract });
+    await handleUploadMetadataAi({ dispatch, getState });
   }
 };
 
 export const createContractURITokenURIProvided = async ({
   dispatch,
-  contract,
+  getState,
 }: {
   dispatch: AppDispatch;
-  contract: IContract;
+  getState: any;
 }) => {
-  const contractURIData = {
-    name: contract.tokenName,
-    description: contract.description,
-    image: contract.image,
-    external_link: contract.externalURL,
-  };
-
+  const state = getState();
+  const { contract, enqueueSnackbar } = state;
   dispatch(setStatus(DeploymentStatus.GeneratingContractURI));
-  const response = await axios.post(
-    `${process.env.NEXT_PUBLIC_API_URL}/collection/contractURI`,
-    {
-      params: contractURIData,
-    }
-  );
-  dispatch(setContractURI(response.data));
+  try {
+    const response = await generateContractUriRequest({
+      name: contract.tokenName,
+      description: contract.description,
+      image: contract.image,
+      external_link: contract.externalURL,
+    });
+    dispatch(setContractURI(response.data));
+  } catch (e) {
+    console.error(e);
+    enqueueSnackbar("There was an error generating the contract URI", {
+      variant: "error",
+    });
+  }
 };
 
 export const deployContract = async ({
