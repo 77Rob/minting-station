@@ -15,21 +15,27 @@ import {
 } from "../imagesReducer";
 
 export const loadImages = async ({ dispatch }: { dispatch: AppDispatch }) => {
-  const response = await axios.get(`http://localhost:5000/images`, {
-    headers: {
-      userId: localStorage.getItem("userId"),
-    },
-  });
+  const response = await axios.get(
+    `${process.env.NEXT_PUBLIC_API_URL}/images`,
+    {
+      headers: {
+        userId: localStorage.getItem("userId"),
+      },
+    }
+  );
 
   dispatch(handleLoadImages(response.data));
 };
 
 export const loadImagesAi = async ({ dispatch }: { dispatch: AppDispatch }) => {
-  const response = await axios.get(`http://localhost:5000/images/ai`, {
-    headers: {
-      userId: localStorage.getItem("userId"),
-    },
-  });
+  const response = await axios.get(
+    `${process.env.NEXT_PUBLIC_API_URL}/images/ai`,
+    {
+      headers: {
+        userId: localStorage.getItem("userId"),
+      },
+    }
+  );
 
   dispatch(handleLoadImages(response.data));
 };
@@ -41,7 +47,7 @@ export const updateMetadata = async ({
   imageData: IImage;
   dispatch: AppDispatch;
 }) => {
-  await axios.post(`http://localhost:5000/images/update`, {
+  await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/images/update`, {
     headers: {
       userId: localStorage.getItem("userId"),
     },
@@ -59,7 +65,7 @@ export const updateMetadataAi = async ({
   imageData: IImage;
   dispatch: AppDispatch;
 }) => {
-  await axios.post(`http://localhost:5000/images/ai/update`, {
+  await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/images/ai/update`, {
     headers: {
       userId: localStorage.getItem("userId"),
     },
@@ -78,7 +84,7 @@ export const deleteImages = async ({
   fileNames: any;
   dispatch: AppDispatch;
 }) => {
-  await axios.post("http://localhost:5000/images/delete", {
+  await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/images/delete`, {
     headers: {
       userId: localStorage.getItem("userId"),
     },
@@ -102,13 +108,16 @@ export const uploadImages = async ({
     formData.append("file", images[key]);
   });
 
-  const response = await axios.post(`http://localhost:5000/images`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-      userId: localStorage.getItem("userId"),
-    },
-  });
-
+  const response = await axios.post(
+    `${process.env.NEXT_PUBLIC_API_URL}/images`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        userId: localStorage.getItem("userId"),
+      },
+    }
+  );
   dispatch(handleAddImages(response.data));
 };
 
@@ -121,14 +130,17 @@ export const generateImagesAi = async ({
   dispatch: AppDispatch;
   enqueueSnackbar: any;
 }) => {
-  const response = await axios.post(`http://localhost:5000/images/generateai`, {
-    headers: {
-      userId: localStorage.getItem("userId"),
-    },
-    params: {
-      prompt,
-    },
-  });
+  const response = await axios.post(
+    `${process.env.NEXT_PUBLIC_API_URL}/images/generateai`,
+    {
+      headers: {
+        userId: localStorage.getItem("userId"),
+      },
+      params: {
+        prompt,
+      },
+    }
+  );
   if (response.data.type == "error") {
     enqueueSnackbar(response.data.message, {
       variant: "error",
@@ -156,7 +168,7 @@ export const handleCreateAndUploadMetadata = async ({
   };
 
   const contractURIRequest = await axios.post(
-    `http://localhost:5000/collection/contractURI`,
+    `${process.env.NEXT_PUBLIC_API_URL}/collection/contractURI`,
     {
       headers: {
         userId: localStorage.getItem("userId"),
@@ -173,7 +185,7 @@ export const handleCreateAndUploadMetadata = async ({
   dispatch(setContractURI(contractURIRequest.data));
 
   const metadataURIRequest = await axios.get(
-    `http://localhost:5000/images/metadataURI`,
+    `${process.env.NEXT_PUBLIC_API_URL}/images/metadataURI`,
     {
       headers: {
         userId: localStorage.getItem("userId"),
@@ -202,7 +214,7 @@ export const handleUploadMetadataAi = async ({
   };
 
   const contractURIRequest = await axios.post(
-    `http://localhost:5000/collection/contractURI`,
+    `${process.env.NEXT_PUBLIC_API_URL}/collection/contractURI`,
     {
       headers: {
         userId: localStorage.getItem("userId"),
@@ -216,7 +228,7 @@ export const handleUploadMetadataAi = async ({
   dispatch(setContractURI(contractURIRequest.data));
 
   const metadataURIRequest = await axios.get(
-    `http://localhost:5000/images/ai/metadataURI`,
+    `${process.env.NEXT_PUBLIC_API_URL}/images/ai/metadataURI`,
     {
       headers: {
         userId: localStorage.getItem("userId"),

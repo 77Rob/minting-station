@@ -19,7 +19,7 @@ export default function useLoadSmartContract({
       if (typeof contractAddress == "string") {
         console.log(contractAddress);
         const contractABI = await axios.get(
-          `http://localhost:5000/collection/abi/${contractAddress}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/collection/abi/${contractAddress}`,
           {
             params: {
               contractAddress: contractAddress,

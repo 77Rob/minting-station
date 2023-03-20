@@ -92,7 +92,7 @@ const uploadMetadata = async ({ dispatch, getState, signer }: any) => {
     attributes: contract.attributes,
   };
 
-  await axios.post(`http://localhost:5000/collection/abi`, {
+  await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/collection/abi`, {
     params: metadataFile,
   });
 };
@@ -128,11 +128,14 @@ export const loadCollection = async ({
 }: {
   dispatch: AppDispatch;
 }) => {
-  const response = await axios.get(`http://localhost:5000/collection`, {
-    headers: {
-      userId: localStorage.getItem("userId"),
-    },
-  });
+  const response = await axios.get(
+    `${process.env.NEXT_PUBLIC_API_URL}/collection`,
+    {
+      headers: {
+        userId: localStorage.getItem("userId"),
+      },
+    }
+  );
   console.log(response.data);
   dispatch(handleLoadCollection(response.data));
 };
@@ -150,7 +153,7 @@ export const uploadImage = async ({
   });
 
   const response = await axios.post(
-    `http://localhost:5000/collection/image`,
+    `${process.env.NEXT_PUBLIC_API_URL}/collection/image`,
     formData,
     {
       headers: {
@@ -197,7 +200,7 @@ export const createContractURITokenURIProvided = async ({
 
   dispatch(setStatus(DeploymentStatus.GeneratingContractURI));
   const response = await axios.post(
-    `http://localhost:5000/collection/contractURI`,
+    `${process.env.NEXT_PUBLIC_API_URL}/collection/contractURI`,
     {
       params: contractURIData,
     }
