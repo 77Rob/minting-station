@@ -1,6 +1,6 @@
 import { FourColumnsIcon, RowsIcon } from "@/assets";
 import Button from "@/components/Button";
-import { NFTImageAi } from "@/components/NFTImageAi";
+import NFTImageAi from "@/components/NFTImageAi";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
   deleteImages,
@@ -12,7 +12,7 @@ import { deselectAllImages, selectAllImages } from "@/store/imagesReducer";
 import { TrashIcon } from "@heroicons/react/24/solid";
 import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
-import { ContractSettings } from "../../components/ContractSettings";
+import ContractSettings from "../../components/ContractSettings";
 
 const AIGeneratedImages = () => {
   const dispatch = useAppDispatch();

@@ -2,11 +2,12 @@ import { motion } from "framer-motion";
 import { PlusIcon, MinusIcon } from "@/assets";
 import { FieldInputProps, FormikProps } from "formik";
 
-export interface IAttributesField {
+export interface AttributesFieldProps {
   field: FieldInputProps<any>;
   form: FormikProps<any>;
 }
-export function AttributesField({ field, form }: IAttributesField) {
+
+const AttributesField = ({ field, form }: AttributesFieldProps) => {
   const handleAddAttribute = () => {
     form.setFieldValue("attributes", [...field.value, { name: "", value: "" }]);
   };
@@ -70,4 +71,6 @@ export function AttributesField({ field, form }: IAttributesField) {
       </div>
     </>
   );
-}
+};
+
+export default AttributesField;

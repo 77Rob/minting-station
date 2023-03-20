@@ -1,16 +1,17 @@
 import { FieldInputProps, FormikProps } from "formik";
 
-export interface ILabelFieldSmall {
+interface LabelFieldSmallProps {
   label: string;
   field: FieldInputProps<any>;
   form: FormikProps<any>;
 }
-export const LabelFieldSmall = ({
+
+const LabelFieldSmall = ({
   label,
   field,
   form,
   ...props
-}: ILabelFieldSmall) => {
+}: LabelFieldSmallProps) => {
   return (
     <div className=" rounded-none">
       <label htmlFor={field.name} className="text-sm label font-bold">
@@ -20,3 +21,5 @@ export const LabelFieldSmall = ({
     </div>
   );
 };
+
+export default LabelFieldSmall;

@@ -4,24 +4,24 @@ import { updateMetadata, updateMetadataAi } from "@/store/async/images";
 import { useState } from "react";
 import { AnimatePresence, motion, useAnimation } from "framer-motion";
 import { Field, Form, Formik } from "formik";
-import { LabelField } from "./LabelField";
+import LabelField from "./LabelField";
 import { GearIcon } from "@/assets";
 import Button from "@/components/Button";
-import { LabelFieldSmall } from "./LabelFieldSmall";
-import { AttributesField } from "./AttributesField";
+import LabelFieldSmall from "./LabelFieldSmall";
+import AttributesField from "./AttributesField";
 
-type INFTImage = IImage & {
+type NFTImageAiGeneratedProps = IImage & {
   columns: number;
 };
 
-export const NFTImageAi = ({
+const NFTImageAi = ({
   fileName,
   name,
   url,
   attributes,
   description,
   columns,
-}: INFTImage) => {
+}: NFTImageAiGeneratedProps) => {
   const [flipped, setFlipped] = useState(false);
 
   const styles = {
@@ -170,3 +170,5 @@ export const NFTImageAi = ({
     </AnimatePresence>
   );
 };
+
+export default NFTImageAi;

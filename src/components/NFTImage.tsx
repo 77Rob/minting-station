@@ -4,23 +4,24 @@ import { updateMetadata } from "@/store/async/images";
 import { useState } from "react";
 import { AnimatePresence, motion, useAnimation } from "framer-motion";
 import { Field, Form, Formik } from "formik";
-import { LabelField } from "./LabelField";
+import LabelField from "./LabelField";
 import { GearIcon } from "@/assets";
 import Button from "@/components/Button";
-import { LabelFieldSmall } from "./LabelFieldSmall";
-import { AttributesField } from "./AttributesField";
+import LabelFieldSmall from "./LabelFieldSmall";
+import AttributesField from "./AttributesField";
 
-type INFTImage = IImage & {
+type NFTImageProps = IImage & {
   columns: number;
 };
-export const NFTImage = ({
+
+const NFTImage = ({
   fileName,
   name,
   url,
   attributes,
   description,
   columns,
-}: INFTImage) => {
+}: NFTImageProps) => {
   const [flipped, setFlipped] = useState(false);
 
   const styles = {
@@ -168,3 +169,5 @@ export const NFTImage = ({
     </AnimatePresence>
   );
 };
+
+export default NFTImage;

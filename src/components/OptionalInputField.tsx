@@ -2,7 +2,7 @@ import { FormikProps, FieldInputProps } from "formik";
 import { useState } from "react";
 import { PlusIcon, MinusIcon } from "@/assets";
 
-interface IOptionalInputField {
+interface OptionalInputFieldProps {
   field: FieldInputProps<any>;
   form: FormikProps<any>;
   defaultValue: any;
@@ -12,7 +12,7 @@ interface IOptionalInputField {
   props: any;
 }
 
-export const OptionalInputField = ({
+const OptionalInputField = ({
   field,
   form,
   defaultValue,
@@ -20,7 +20,7 @@ export const OptionalInputField = ({
   step = 1,
   type,
   ...props
-}: IOptionalInputField) => {
+}: OptionalInputFieldProps) => {
   const [checked, setChecked] = useState(
     field.value === undefined ? false : true
   );
@@ -103,3 +103,5 @@ export const OptionalInputField = ({
     </div>
   );
 };
+
+export default OptionalInputField;

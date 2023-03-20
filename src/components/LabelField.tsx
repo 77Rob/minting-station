@@ -1,12 +1,12 @@
 import { FieldInputProps, FormikProps } from "formik";
 
-interface ILabelField {
+interface LabelFieldProps {
   label: string;
   field: FieldInputProps<any>;
   form: FormikProps<any>;
 }
 
-export const LabelField = ({ label, field, form, ...props }: ILabelField) => {
+const LabelField = ({ label, field, form, ...props }: LabelFieldProps) => {
   return (
     <div>
       <label htmlFor={field.name} className="label">
@@ -16,3 +16,5 @@ export const LabelField = ({ label, field, form, ...props }: ILabelField) => {
     </div>
   );
 };
+
+export default LabelField;
