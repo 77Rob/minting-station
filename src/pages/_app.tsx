@@ -1,3 +1,4 @@
+import { SnackbarProvider, useSnackbar } from "notistack";
 import "../styles/globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
 import {
@@ -83,9 +84,11 @@ function MyApp({ Component, pageProps }: AppProps) {
             borderRadius: "medium",
           })}
         >
-          <Header />
-          <Component {...pageProps} />
-          <Footer />
+          <SnackbarProvider>
+            <Header />
+            <Component {...pageProps} />
+            <Footer />
+          </SnackbarProvider>
         </RainbowKitProvider>
       </WagmiConfig>
     </Provider>
