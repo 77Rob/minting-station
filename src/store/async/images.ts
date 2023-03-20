@@ -24,6 +24,16 @@ export const loadImages = async ({ dispatch }: { dispatch: AppDispatch }) => {
   dispatch(handleLoadImages(response.data));
 };
 
+export const loadImagesAi = async ({ dispatch }: { dispatch: AppDispatch }) => {
+  const response = await axios.get(`http://localhost:5000/images/ai`, {
+    headers: {
+      userId: localStorage.getItem("userId"),
+    },
+  });
+
+  dispatch(handleLoadImages(response.data));
+};
+
 export const updateMetadata = async ({
   imageData,
   dispatch,
@@ -79,6 +89,25 @@ export const uploadImages = async ({
     headers: {
       "Content-Type": "multipart/form-data",
       userId: localStorage.getItem("userId"),
+    },
+  });
+
+  dispatch(handleAddImages(response.data));
+};
+
+export const generateImagesAi = async ({
+  prompt,
+  dispatch,
+}: {
+  prompt: string;
+  dispatch: AppDispatch;
+}) => {
+  const response = await axios.post(`http://localhost:5000/images/generateai`, {
+    headers: {
+      userId: localStorage.getItem("userId"),
+    },
+    params: {
+      prompt,
     },
   });
 
