@@ -125,6 +125,6 @@ export const handleCreateAndUploadMetadata = async ({
     }
   );
   const baseUri = metadataURIRequest.data as string;
-  const tokenUri = `${baseUri}/{tokenId}`;
+  const tokenUri = `${baseUri}/`;
   dispatch(setTokenURI(tokenUri));
 };

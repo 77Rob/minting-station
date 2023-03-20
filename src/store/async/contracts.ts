@@ -1,4 +1,8 @@
-import { IContract, IContractReducerState } from "./../contractReducer";
+import {
+  IContract,
+  IContractReducerState,
+  setContractURI,
+} from "./../contractReducer";
 import { handleCreateAndUploadMetadata } from "./images";
 import {
   downloadDependenciesForSource,
@@ -22,6 +26,7 @@ import {
   setStatus,
   submitContractValues,
 } from "../contractReducer";
+import { createCompilerInput } from "@/compiler";
 
 export const OPEN_ZEPPELIN_VERSION = "4.3.2";
 
@@ -70,6 +75,8 @@ const uploadMetadata = async ({ dispatch, getState, signer }: any) => {
   } = mainContract;
 
   const { deploymentAddress } = state;
+  console.log(abi);
+  console.log(deploymentAddress);
 
   const metadataFile = {
     abi,
@@ -103,6 +110,7 @@ const initiateDeploymentTransaction = async ({
 
   try {
     const factory = new ContractFactory(abi, bytecode, signer);
+    console.log(JSON.stringify(createCompilerInput(state.compiler.files)));
     const contract = await factory.deploy(state.contract.tokenURI);
     await contract.deployed();
     dispatch(contractDeployed({ address: contract.address }));
@@ -188,6 +196,7 @@ export const createContractURITokenURIProvided = async ({
       params: contractURIData,
     }
   );
+  dispatch(setContractURI(response.data));
 };
 
 export const deployContract = async ({

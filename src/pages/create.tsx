@@ -37,13 +37,6 @@ const options: IOption[] = [
     image: "/link.svg",
     href: "/create/baseuri",
   },
-  {
-    name: "PROVIDE METADATA FILES",
-    description:
-      "PROVIDE JSON METADATA FILES to deploy nft collection. Files will be uploaded to IPFS before deployment.",
-    image: "folder_closed.svg",
-    href: "/create/metadata",
-  },
 ];
 
 const OptionCard = ({ name, description, image, href }: IOption) => {

@@ -5,11 +5,11 @@ import Link from "next/link";
 
 const Header = () => {
   return (
-    <header className="border-b-2 mx-4 pt-1 pb-2 flex items-center justify-between border-white">
+    <header className="backdrop-invert-[0.03] px-4 py-1 w-full flex items-center justify-between ">
       <Link href="/">
         <LogoHeader className="w-80" />
       </Link>
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center gap-x-4">
         <ConnectButton label="CONNECT WALLET" />
         <Link href="https://www.github.com">
           <GitHubIcon className="w-8 hover:scale-[1.1]" />

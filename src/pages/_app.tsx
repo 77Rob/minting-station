@@ -84,9 +84,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           })}
         >
           <Header />
-          <Flowbite>
-            <Component {...pageProps} />
-          </Flowbite>
+          <Component {...pageProps} />
           <Footer />
         </RainbowKitProvider>
       </WagmiConfig>

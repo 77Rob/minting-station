@@ -108,6 +108,7 @@ export const ContractSettings = ({
 
   const state = useAppSelector((state) => state.contract);
   const [showDeploymentModal, setShowDeploymentModal] = useState(false);
+  const [submit, setSubmit] = useState(false);
 
   const getState = () => {
     return state;
@@ -148,37 +149,42 @@ export const ContractSettings = ({
       )}
       <Formik
         initialValues={initialContractState}
-        onSubmit={async (values: any) => {
-          console.log(values);
-          setShowDeploymentModal(true);
-          dispatch(submitContractValues(values));
-          await deployContract({
-            dispatch,
-            getState,
-            compiler,
-            values,
-            signer,
-            provider,
-            collectionType,
-          });
+        onSubmit={async (values: any, actions) => {
+          if (submit) {
+            console.log(values);
+            setShowDeploymentModal(true);
+            dispatch(submitContractValues(values));
+            await deployContract({
+              dispatch,
+              getState,
+              compiler,
+              values,
+              signer,
+              provider,
+              collectionType,
+            });
+          } else {
+            actions.setSubmitting(false);
+          }
         }}
       >
         <Form className="space-y-3">
-          {state.contract.image ? (
-            <div className="flex justify-center flex-col">
-              <label className="label text-lg text-center">
-                Collection Image
-              </label>
-              <img
-                className="col-span-2 h-56 justify-center object-contain border-solid rounded-xl backdrop-invert-[.15]"
-                src={state.contract.image}
-              />
-            </div>
-          ) : (
-            <UploadImage />
-          )}
-
-          <input
+          <div>
+            {state.contract.image ? (
+              <div className="flex justify-center flex-col">
+                <label className="label text-lg text-center">
+                  Collection Image
+                </label>
+                <img
+                  className="col-span-2 h-56 justify-center object-contain border-solid rounded-xl backdrop-invert-[.15]"
+                  src={state.contract.image}
+                />
+              </div>
+            ) : (
+              <UploadImage />
+            )}
+          </div>
+          {/* <input
             multiple
             onChange={(e) => {
               console.log(e.target.files);
@@ -187,8 +193,7 @@ export const ContractSettings = ({
             type="file"
             data-testid="file-input"
             name="file_upload"
-            className="hidden"
-          />
+          /> */}
           <Field
             name="tokenName"
             className="input"
@@ -343,12 +348,22 @@ export const ContractSettings = ({
               />
             </LayoutGroup>
           )}
-          <Button
-            type="submit"
-            className="btn-primary  px-8 w-full text-center"
-          >
-            DEPLOY COLLECTION
-          </Button>
+          {signer ? (
+            <Button
+              type="submit"
+              onClick={() => setSubmit(true)}
+              className="btn-primary  px-8 w-full text-center"
+            >
+              DEPLOY COLLECTION
+            </Button>
+          ) : (
+            <Button
+              disabled={true}
+              className="btn-primary bg-base-200 shadow-none px-8 w-full text-center"
+            >
+              CONNECT WEB3 WALLET TO CONTINUE
+            </Button>
+          )}
         </Form>
       </Formik>
     </div>
