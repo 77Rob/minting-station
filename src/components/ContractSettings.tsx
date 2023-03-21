@@ -1,29 +1,24 @@
 import { useCompiler } from "@/compiler";
 import OptionalInputField from "@/components/OptionalInputField";
 import SwitchField from "@/components/SwitchField";
-import { AppDispatch, useAppDispatch, useAppSelector } from "@/store";
-import {
-  deployContract,
-  loadCollection,
-  uploadImage,
-} from "@/store/utils/contracts";
+import { useAppDispatch, useAppSelector } from "@/store";
+import { deployContract, loadCollection } from "@/store/utils/contracts";
 import {
   CollectionType,
   initialContractState,
   submitContractValues,
 } from "@/store/reducers/contractReducer";
-import { CloudIcon } from "@heroicons/react/24/solid";
 import { Field, Form, Formik } from "formik";
 import { LayoutGroup } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useProvider, useSigner } from "wagmi";
 import Button from "./Button";
 import DeploymentModal from "./DeploymentModal";
-import FileUpload from "./FileUpload";
 import LabelField from "./LabelField";
 import { withFramerMotion } from "./withFramerMotion";
 import { useSnackbar } from "notistack";
 import { IContractReducerState } from "../store/reducers/contractReducer";
+import UploadCollectionImage from "./UploadCollectionImage";
 
 type ContractSettingsProps = {
   collectionType: CollectionType;
@@ -224,6 +219,14 @@ const ContractSettings = ({ collectionType }: ContractSettingsProps) => {
                 component={withFramerMotion(OptionalInputField, 2)}
               />
               <Field
+                name="ownerMintAllowance"
+                defaultValue={10}
+                type="number"
+                step={5}
+                label="Owner Mint Allowance"
+                component={withFramerMotion(OptionalInputField, 7)}
+              />
+              <Field
                 name="onlyOwnerCanMint"
                 label="Only Owner Can Mint"
                 component={withFramerMotion(SwitchField, 3)}
@@ -267,39 +270,3 @@ const ContractSettings = ({ collectionType }: ContractSettingsProps) => {
   );
 };
 export default ContractSettings;
-
-type UploadCollectionImageProps = {
-  dispatch: AppDispatch;
-  getState: () => IContractReducerState & {
-    enqueueSnackbar: any;
-  };
-};
-
-const UploadCollectionImage = ({
-  dispatch,
-  getState,
-}: UploadCollectionImageProps) => {
-  return () => {
-    return (
-      <FileUpload
-        className="col-span-2 h-56 justify-center border-solid"
-        onFiles={(files) => {
-          uploadImage({ images: files, dispatch, getState });
-        }}
-      >
-        <span className="flex items-center text-center flex-col justify-center">
-          <CloudIcon className="w-12 mb-2" />
-          <span className="text-xl font-semibold">
-            Upload Collection Banner
-          </span>
-          <span className="text-sm text-gray-300 mb-6">
-            This image will be displayed on collection page and NFT marketplaces
-          </span>
-          <span className="text-xs text-gray-400">
-            Accepted formats: PNG, JPG, GIF, WEBP,
-          </span>
-        </span>
-      </FileUpload>
-    );
-  };
-};

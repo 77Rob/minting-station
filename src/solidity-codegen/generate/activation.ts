@@ -1,6 +1,5 @@
 import {
   AST,
-  blockComment,
   functionDeclaration,
   identifierExpression,
   literalExpression,
@@ -17,7 +16,6 @@ export function generateActivation({
   mutableAccessToken: boolean;
 }): (AST.Declaration | AST.BlockComment)[] {
   return [
-    blockComment({ value: "ACTIVATION", commentType: "/*" }),
     variableDeclaration({
       name: "saleIsActive",
       typeAnnotation: "bool",

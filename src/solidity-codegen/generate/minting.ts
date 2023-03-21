@@ -186,7 +186,7 @@ export function generateMinting(
   ];
 
   const hasAllowlist =
-    config.amountAllowedForOwner > 0 || config.allowlistDestinations.length > 0;
+    config.ownerMintAllowance > 0 || config.allowlistDestinations.length > 0;
 
   const checkAndUpdateAllowedMint = ifStatement({
     condition: binaryExpression({

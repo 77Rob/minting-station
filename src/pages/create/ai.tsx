@@ -8,7 +8,10 @@ import {
   loadImagesAi,
 } from "@/store/utils/images";
 import { CollectionType } from "@/store/reducers/contractReducer";
-import { deselectAllImages, selectAllImages } from "@/store/imagesReducer";
+import {
+  deselectAllImages,
+  selectAllImages,
+} from "@/store/reducers/imagesReducer";
 import { TrashIcon } from "@heroicons/react/24/solid";
 import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";

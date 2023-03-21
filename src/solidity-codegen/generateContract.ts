@@ -180,7 +180,7 @@ export function generateContractSource(config: ContractState) {
                     rhs: identifierExpression("proxyRegistryAddress_"),
                   }),
                 }),
-              config.amountAllowedForOwner > 0 &&
+              config.ownerMintAllowance > 0 &&
                 expressionStatement({
                   expression: assignmentExpression({
                     lhs: indexAccessExpression({
@@ -189,7 +189,7 @@ export function generateContractSource(config: ContractState) {
                         ? context.msgSender
                         : context.owner,
                     }),
-                    rhs: literalExpression(config.amountAllowedForOwner),
+                    rhs: literalExpression(config.ownerMintAllowance),
                   }),
                 }),
               ...config.allowlistDestinations
@@ -209,7 +209,7 @@ export function generateContractSource(config: ContractState) {
           ...(config.tokenParameters.length > 0
             ? generateTokenParameters(config)
             : []),
-          ...(config.amountAllowedForOwner > 0 ||
+          ...(config.ownerMintAllowance > 0 ||
           config.allowlistDestinations.length > 0 ||
           config.limitPerWallet !== undefined
             ? generateAllowlist(config)

@@ -62,8 +62,10 @@ export function wrapCompilerModule(
   };
 }
 
+// const COMPILER_URL =
+//   "https://binaries.soliditylang.org/bin/soljson-v0.8.9+commit.e5eed63a.js";
 const COMPILER_URL =
-  "https://binaries.soliditylang.org/bin/soljson-v0.8.9+commit.e5eed63a.js";
+  "https://binaries.soliditylang.org/bin/soljson-v0.8.18+commit.87f61d96.js";
 
 export async function downloadCompiler(): Promise<SolidityCompilerModule> {
   const self = globalThis;

@@ -21,6 +21,7 @@ export interface IContract {
   tokenParameters: TokenParameter[];
   payoutDestinations: PayoutDestination[];
   allowlistDestinations: AllowlistDestination[];
+  ownerMintAllowance?: number;
   tokenURI?: string;
   contractURI?: string;
 }
@@ -116,6 +117,7 @@ export const initialContractState: IContract = {
   payoutDestinations: [],
   allowlistDestinations: [],
   limitPerWallet: undefined,
+  ownerMintAllowance: undefined,
   mintSpecifiedIds: false,
   onlyOwnerCanMint: false,
   enumerable: false,

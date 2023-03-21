@@ -1,4 +1,4 @@
-import { ContractState } from "@/store/reducers/contractReducer";
+import { IContract } from "@/store/reducers/contractReducer";
 import {
   AST,
   binaryExpression,
@@ -14,15 +14,16 @@ import {
 } from "@/solidity-language";
 
 export function generateAllowlist(
-  config: Pick<
-    ContractState,
-    "limitPerWallet" | "amountAllowedForOwner" | "allowlistDestinations"
+  contract: Pick<
+    IContract,
+    "limitPerWallet" | "ownerMintAllowance" | "allowlistDestinations"
   >
 ): (AST.Declaration | AST.BlockComment)[] {
   const hasAllowlist =
-    config.amountAllowedForOwner > 0 || config.allowlistDestinations.length > 0;
+    contract.ownerMintAllowance !== undefined ||
+    contract.allowlistDestinations.length > 0;
 
-  if (!hasAllowlist && config.limitPerWallet === undefined) {
+  if (!hasAllowlist && contract.limitPerWallet === undefined) {
     return [];
   }
 
@@ -38,14 +39,14 @@ export function generateAllowlist(
       modifiers: ["private"],
       typeAnnotation: "mapping(address => uint256)",
     }),
-    ...(config.limitPerWallet !== undefined
+    ...(contract.limitPerWallet !== undefined
       ? [
           parseVariableDeclaration(
-            `uint256 public constant MINT_LIMIT_PER_WALLET = ${config.limitPerWallet}`
+            `uint256 public constant MINT_LIMIT_PER_WALLET = ${contract.limitPerWallet}`
           ),
         ]
       : []),
-    ...(hasAllowlist && config.limitPerWallet !== undefined
+    ...(hasAllowlist && contract.limitPerWallet !== undefined
       ? [
           functionDeclaration({
             name: "max",
@@ -68,7 +69,7 @@ export function generateAllowlist(
         typeAnnotation: "uint256",
       },
       body: [
-        ...(hasAllowlist && config.limitPerWallet !== undefined
+        ...(hasAllowlist && contract.limitPerWallet !== undefined
           ? [
               ifStatement({
                 condition: identifierExpression("saleIsActive"),

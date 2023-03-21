@@ -12,7 +12,7 @@ import {
   handleDeleteImages,
   handleLoadImages,
   handleUpdateMetadata,
-} from "../imagesReducer";
+} from "../reducers/imagesReducer";
 import {
   generateContractUriRequest,
   generateImagesAiRequest,

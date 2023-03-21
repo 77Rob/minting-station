@@ -21,8 +21,8 @@ import {
 } from "../reducers/contractReducer";
 import { setContractURI } from "../reducers/contractReducer";
 import {
-  handleCreateAndUploadMetadata,
-  handleUploadMetadataAi,
+  handleCreateAndUploadMetadata as createMetadataImagesProvided,
+  handleUploadMetadataAi as createMetadataAiGeneratedImages,
 } from "./images";
 import {
   generateContractUriRequest,
@@ -31,7 +31,7 @@ import {
   uploadCollectionImageRequest,
 } from "./requests";
 
-export const OPEN_ZEPPELIN_VERSION = "4.3.2";
+export const OPEN_ZEPPELIN_VERSION = "4.8.0";
 
 export const prepareContract = async ({
   dispatch,
@@ -43,31 +43,74 @@ export const prepareContract = async ({
   getState: any;
 }) => {
   const state = getState();
-  const { contract } = state;
-  dispatch(loadingCompiler());
-  const contractName = getValidContractName(contract.tokenName);
-  const sourceName = contractName + ".sol";
+  const { contract, enqueSnackbar } = state;
+  let contractName;
+  let sourceName;
+  let source;
 
-  const source = generateContractSource(contract);
+  // Generate the contract source
+  try {
+    dispatch(loadingCompiler());
+    contractName = getValidContractName(contract.tokenName);
+    sourceName = contractName + ".sol";
+    source = generateContractSource(contract);
+  } catch (e) {
+    console.log(e);
+    enqueSnackbar({
+      message: "Error generating contract source",
+      options: {
+        variant: "error",
+      },
+    });
+    return;
+  }
 
-  const files = await downloadDependenciesForSource(fetch, sourceName, source, {
-    "@openzeppelin/contracts": OPEN_ZEPPELIN_VERSION,
-  });
-
-  dispatch(setCompilerReady({ files }));
-
-  const output = await compiler.compile(files);
-
-  dispatch(
-    completeCompilation({
-      value: output,
+  // Download dependencies
+  try {
+    const files = await downloadDependenciesForSource(
+      fetch,
       sourceName,
-      contractName,
-    })
-  );
+      source,
+      {
+        "@openzeppelin/contracts": OPEN_ZEPPELIN_VERSION,
+      }
+    );
+
+    dispatch(setCompilerReady({ files }));
+  } catch (e) {
+    console.log(e);
+    enqueSnackbar({
+      message: "Error downloading dependencies",
+      options: {
+        variant: "error",
+      },
+    });
+    return;
+  }
+
+  // Compile the contract
+  try {
+    const output = await compiler.compile(files);
+    dispatch(
+      completeCompilation({
+        value: output,
+        sourceName,
+        contractName,
+      })
+    );
+  } catch (e) {
+    console.log(e);
+    enqueSnackbar({
+      message: "Error compiling contract",
+      options: {
+        variant: "error",
+      },
+    });
+    return;
+  }
 };
 
-const uploadMetadata = async ({ dispatch, getState, signer }: any) => {
+const saveContractData = async ({ dispatch, getState, signer }: any) => {
   const state = getState();
   const { contract } = state;
   const { sourceName, contractName, contracts } = state.compiler;
@@ -164,28 +207,28 @@ export const uploadImage = async ({
 
 const handleMetadata = async ({ dispatch, getState, collectionType }: any) => {
   if (collectionType === CollectionType.BaseURIProvided) {
-    await createContractURITokenURIProvided({
+    await createMetadataTokenURIProvided({
       dispatch,
       getState,
     });
   }
 
   if (collectionType == CollectionType.ImagesProvided) {
-    await handleCreateAndUploadMetadata({
+    await createMetadataImagesProvided({
       dispatch,
       getState,
     });
   }
 
   if (collectionType == CollectionType.AiGenerated) {
-    await handleUploadMetadataAi({
+    await createMetadataAiGeneratedImages({
       dispatch,
       getState,
     });
   }
 };
 
-export const createContractURITokenURIProvided = async ({
+export const createMetadataTokenURIProvided = async ({
   dispatch,
   getState,
 }: {
@@ -221,13 +264,9 @@ export const deployContract = async ({
   compiler,
   collectionType,
 }: any) => {
-  console.log("Handling metadata");
   dispatch(submitContractValues(values));
   await handleMetadata({ dispatch, getState, collectionType });
-  console.log("Preparing contract");
   await prepareContract({ dispatch, compiler, getState });
-  console.log("Initiating deployment");
   await initiateDeploymentTransaction({ dispatch, getState, provider, signer });
-  console.log("Uploading metadata");
-  uploadMetadata({ dispatch, getState, signer });
+  await saveContractData({ dispatch, getState, signer });
 };

@@ -4,11 +4,15 @@ import FileUpload from "@/components/FileUpload";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { deleteImages, loadImages, uploadImages } from "@/store/utils/images";
 import { CollectionType } from "@/store/reducers/contractReducer";
-import { deselectAllImages, selectAllImages } from "@/store/imagesReducer";
+import {
+  deselectAllImages,
+  selectAllImages,
+} from "@/store/reducers/imagesReducer";
 import { TrashIcon } from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
 import ContractSettings from "../../components/ContractSettings";
 import NFTImage from "../../components/NFTImage";
+import MintNFTButton from "@/components/MintNFTButton";
 
 const Images = () => {
   const [columns, setColumns] = useState(5);
@@ -29,7 +33,7 @@ const Images = () => {
               uploadImages({ images: files, dispatch });
             }}
           />
-
+          <MintNFTButton contractAddress="0xe71D62fddBFAC2BFc07eFca886B3FBa6D1487bc6" />
           <div className="col-span-1" />
 
           <div className="space-y-2 items-end flex flex-col col-span-2">

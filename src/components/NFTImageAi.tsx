@@ -1,5 +1,9 @@
 import { useAppDispatch, useAppSelector } from "@/store";
-import { IImage, deselectImage, selectImage } from "@/store/imagesReducer";
+import {
+  IImage,
+  deselectImage,
+  selectImage,
+} from "@/store/reducers/imagesReducer";
 import { updateMetadata, updateMetadataAi } from "@/store/utils/images";
 import { useState } from "react";
 import { AnimatePresence, motion, useAnimation } from "framer-motion";
