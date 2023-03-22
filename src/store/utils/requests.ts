@@ -93,7 +93,7 @@ const generateMetadataUriAiGeneratedImagesRequest = async () => {
   );
 };
 
-const loadCollectionRequest = async () => {
+const loadCollectionSettingsRequest = async () => {
   return await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/collection`, {
     headers: {
       userId: localStorage.getItem("userId"),
@@ -101,6 +101,12 @@ const loadCollectionRequest = async () => {
   });
 };
 
+const loadCollectionRequest = async ({ address }: any) => {
+  return await axios.get(
+    `${process.env.NEXT_PUBLIC_API_URL}/collection/${address}`,
+    {}
+  );
+};
 const uploadCollectionImageRequest = async (formData: FormData) => {
   return await axios.post(
     `${process.env.NEXT_PUBLIC_API_URL}/collection/image`,
@@ -113,12 +119,24 @@ const uploadCollectionImageRequest = async (formData: FormData) => {
     }
   );
 };
+const deleteCollectionImageRequest = async () => {
+  return await axios.post(
+    `${process.env.NEXT_PUBLIC_API_URL}/collection/image/delete`,
+    {
+      headers: {
+        userId: localStorage.getItem("userId"),
+      },
+    }
+  );
+};
 
 const saveCollectionRequest = async (collectionData: any) => {
   return await axios.post(
     `${process.env.NEXT_PUBLIC_API_URL}/collection/save`,
     {
-      params: collectionData,
+      params: {
+        collection: collectionData,
+      },
     }
   );
 };
@@ -131,7 +149,9 @@ export {
   generateMetadataUriRequest,
   saveCollectionRequest,
   uploadImagesRequest,
-  loadCollectionRequest,
+  loadCollectionSettingsRequest,
   generateContractUriRequest,
+  loadCollectionRequest,
+  deleteCollectionImageRequest,
   generateMetadataUriAiGeneratedImagesRequest,
 };
