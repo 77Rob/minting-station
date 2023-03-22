@@ -33,7 +33,6 @@ const Images = () => {
               uploadImages({ images: files, dispatch });
             }}
           />
-          <MintNFTButton contractAddress="0xeF2d883fd9c1E0D4A9f27491Ca210797Bf878C96" />
           <div className="col-span-1" />
 
           <div className="space-y-2 items-end flex flex-col col-span-2">
