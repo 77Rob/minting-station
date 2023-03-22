@@ -2,10 +2,15 @@ import { useCompiler } from "@/compiler";
 import OptionalInputField from "@/components/OptionalInputField";
 import SwitchField from "@/components/SwitchField";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { deployContract, loadCollection } from "@/store/utils/contracts";
+import {
+  deleteCollectionImage,
+  deployContract,
+  loadCollectionSettings,
+} from "@/store/utils/contracts";
 import {
   CollectionType,
   initialContractState,
+  removeCollectionImage,
   submitContractValues,
 } from "@/store/reducers/contractReducer";
 import { Field, Form, Formik } from "formik";
@@ -18,6 +23,7 @@ import LabelField from "./LabelField";
 import { withFramerMotion } from "./withFramerMotion";
 import { useSnackbar } from "notistack";
 import UploadCollectionImage from "./UploadCollectionImage";
+import { TrashIcon } from "@heroicons/react/24/solid";
 
 type ContractSettingsProps = {
   collectionType: CollectionType;
@@ -39,7 +45,7 @@ const ContractSettings = ({ collectionType }: ContractSettingsProps) => {
   };
 
   useEffect(() => {
-    loadCollection({ dispatch });
+    loadCollectionSettings({ dispatch });
   }, []);
 
   return (
@@ -66,15 +72,29 @@ const ContractSettings = ({ collectionType }: ContractSettingsProps) => {
       >
         <Form className="space-y-3">
           <div>
+            <h1 className="text-xl w-full text-center mb-3 font-bold">
+              Collection Settings
+            </h1>
             {state.contract.image ? (
-              <div className="flex justify-center flex-col">
-                <label className="label text-lg text-center">
+              <div className="flex justify-center items-center flex-col">
+                <label className="w-full text-left label ">
                   Collection Image
                 </label>
-                <img
-                  className="col-span-2 h-56 justify-center object-contain border-solid rounded-xl backdrop-invert-[.15]"
-                  src={state.contract.image}
-                />
+                <div className="bg-base-200 py-2 relative rounded-xl w-full flex justify-center">
+                  <Button
+                    onClick={() => {
+                      deleteCollectionImage({ dispatch });
+                    }}
+                    className="p-1 rounded-lg absolute top-1 right-1 btn-red"
+                    type="button"
+                  >
+                    <TrashIcon className="h-4 w-4 cursor-pointer" />
+                  </Button>
+                  <img
+                    className="col-span-2 h-56 justify-center object-contain border-solid rounded-xl "
+                    src={state.contract.image}
+                  />
+                </div>
               </div>
             ) : (
               <UploadCollectionImage dispatch={dispatch} getState={getState} />
