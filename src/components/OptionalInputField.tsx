@@ -68,6 +68,7 @@ const OptionalInputField = ({
         <div className="col-span-5 flex items-center px-2 py-1 border-white border bg-base-200 rounded-xl">
           <button
             className="text-xl flex justify-center w-[20%]"
+            type="button"
             onClick={handleDecrement}
           >
             <MinusIcon />
@@ -83,6 +84,7 @@ const OptionalInputField = ({
           />
           <button
             className="text-xl flex justify-center w-[20%]"
+            type="button"
             onClick={() => handleIncrement()}
           >
             <PlusIcon />

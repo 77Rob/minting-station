@@ -19,6 +19,7 @@ const SwitchField = ({ field, form, label, ...props }: SwitchFieldProps) => {
         <div className="relative">
           <input
             type="checkbox"
+            checked={field.value}
             {...field}
             {...props}
             id={field.name}
