@@ -1,4 +1,4 @@
-import { Action, createSlice } from "@reduxjs/toolkit";
+import { Action, createSlice, current } from "@reduxjs/toolkit";
 import { CompilerOutput } from "hardhat/types";
 import { useAppSelector } from "..";
 
@@ -174,14 +174,17 @@ const contractSlice = createSlice({
     },
     submitContractValues: (state: any, action: any) => {
       console.log("state.contract");
-      console.log(state);
-      console.log(state.contract);
+      console.log(current(state));
       state.contract = action.payload;
-      console.log(state.contract);
+      console.log(current(state));
     },
     loadingCompiler: (state: any) => {
       state.status = DeploymentStatus.LoadingCompiler;
     },
+    removeCollectionImage: (state: any) => {
+      state.contract.image = undefined;
+    },
+
     generatingContractURI: (state: any) => {
       state.status = DeploymentStatus.GeneratingContractURI;
     },
@@ -251,5 +254,6 @@ export const {
   generatingContractURI,
   contractDeploying,
   setStatus,
+  removeCollectionImage,
   contractDeployError,
 } = contractSlice.actions;
