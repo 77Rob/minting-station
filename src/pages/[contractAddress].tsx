@@ -16,6 +16,7 @@ const MintingPage = () => {
   const { contractDataServer, contract } = useLoadSmartContract({
     contractAddress: contractAddress,
   });
+
   if (contractDataServer) {
     console.log(contractDataServer);
     return (

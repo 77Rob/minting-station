@@ -38,7 +38,8 @@ export function generateMinting(
   } = config;
   const priceValue = Number(price ?? "0");
   const actualPrice = priceValue * 1000000000000000000;
-
+  console.log("actualPrice", actualPrice);
+  console.log(priceValue);
   const hasPrice = priceValue > 0;
   const hasMultimint = (multimint ?? 1) > 1;
 

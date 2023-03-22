@@ -10,14 +10,13 @@ import {
 } from "@/store/reducers/contractReducer";
 import { Field, Form, Formik } from "formik";
 import { LayoutGroup } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useProvider, useSigner } from "wagmi";
 import Button from "./Button";
 import DeploymentModal from "./DeploymentModal";
 import LabelField from "./LabelField";
 import { withFramerMotion } from "./withFramerMotion";
 import { useSnackbar } from "notistack";
-import { IContractReducerState } from "../store/reducers/contractReducer";
 import UploadCollectionImage from "./UploadCollectionImage";
 
 type ContractSettingsProps = {
@@ -34,9 +33,8 @@ const ContractSettings = ({ collectionType }: ContractSettingsProps) => {
 
   const state = useAppSelector((state) => state.contract);
   const [showDeploymentModal, setShowDeploymentModal] = useState(false);
-  const [submit, setSubmit] = useState(false);
 
-  const getState = (): IContractReducerState & { enqueueSnackbar: any } => {
+  const getState = () => {
     return { ...state, enqueueSnackbar };
   };
 
@@ -50,23 +48,20 @@ const ContractSettings = ({ collectionType }: ContractSettingsProps) => {
         <DeploymentModal open={open} setOpen={setShowDeploymentModal} />
       )}
       <Formik
-        initialValues={initialContractState}
+        initialValues={state.contract}
         onSubmit={async (values: any, actions) => {
-          if (submit) {
-            setShowDeploymentModal(true);
-            dispatch(submitContractValues(values));
-            await deployContract({
-              dispatch,
-              getState,
-              compiler,
-              values,
-              signer,
-              provider,
-              collectionType,
-            });
-          } else {
-            actions.setSubmitting(false);
-          }
+          setShowDeploymentModal(true);
+          dispatch(submitContractValues(values));
+          await deployContract({
+            dispatch,
+            statex: state,
+            getState,
+            compiler,
+            values,
+            signer,
+            provider,
+            collectionType,
+          });
         }}
       >
         <Form className="space-y-3">
@@ -163,6 +158,7 @@ const ContractSettings = ({ collectionType }: ContractSettingsProps) => {
 
           <Button
             whileTap={{ scale: 0.97 }}
+            type="button"
             whileHover={{ scale: 1.02 }}
             onClick={() => setShowAdvancedOptions((curr) => !curr)}
             className="w-full btn-primary px-3 flex text-center
@@ -251,7 +247,6 @@ const ContractSettings = ({ collectionType }: ContractSettingsProps) => {
           {signer ? (
             <Button
               type="submit"
-              onClick={() => setSubmit(true)}
               className="btn-primary  px-8 w-full text-center"
             >
               DEPLOY COLLECTION
@@ -259,6 +254,7 @@ const ContractSettings = ({ collectionType }: ContractSettingsProps) => {
           ) : (
             <Button
               disabled={true}
+              type="button"
               className="btn-primary bg-base-200 shadow-none px-8 w-full text-center"
             >
               CONNECT WEB3 WALLET TO CONTINUE

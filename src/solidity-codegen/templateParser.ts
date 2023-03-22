@@ -12,6 +12,7 @@ export function encodeQueryParameters(
 
   return encoded.join("&");
 }
+
 const lexer = new Lexer([
   state("main", [
     rule("open", "{", {

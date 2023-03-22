@@ -1,6 +1,7 @@
 import {
   downloadDependenciesForSource,
   generateContractSource,
+  getBaseURI,
   getValidContractName,
 } from "@/solidity-codegen";
 import { ContractFactory } from "ethers";
@@ -30,89 +31,63 @@ import {
   saveCollectionRequest,
   uploadCollectionImageRequest,
 } from "./requests";
+import { Interface } from "ethers/lib/utils.js";
+import { createCompilerInput } from "@/compiler";
+import axios from "axios";
 
+export const COMPILER_VERSION = "v0.8.18+commit.87f61d96";
 export const OPEN_ZEPPELIN_VERSION = "4.8.0";
 
 export const prepareContract = async ({
   dispatch,
   compiler,
   getState,
+  values,
 }: {
   dispatch: AppDispatch;
   compiler: any;
   getState: any;
+  values: any;
 }) => {
   const state = getState();
-  const { contract, enqueSnackbar } = state;
+  const { contract, enqueueSnackbar } = state;
   let contractName;
   let sourceName;
   let source;
 
   // Generate the contract source
-  try {
-    dispatch(loadingCompiler());
-    contractName = getValidContractName(contract.tokenName);
-    sourceName = contractName + ".sol";
-    source = generateContractSource(contract);
-  } catch (e) {
-    console.log(e);
-    enqueSnackbar({
-      message: "Error generating contract source",
-      options: {
-        variant: "error",
-      },
-    });
-    return;
-  }
+  dispatch(loadingCompiler());
+  contractName = getValidContractName(values.tokenName);
+  sourceName = contractName + ".sol";
+  source = generateContractSource(values);
 
   // Download dependencies
-  try {
-    const files = await downloadDependenciesForSource(
-      fetch,
+  const files = await downloadDependenciesForSource(fetch, sourceName, source, {
+    "@openzeppelin/contracts": OPEN_ZEPPELIN_VERSION,
+  });
+
+  dispatch(setCompilerReady({ files }));
+
+  const output = await compiler.compile(files);
+  dispatch(
+    completeCompilation({
+      value: output,
       sourceName,
-      source,
-      {
-        "@openzeppelin/contracts": OPEN_ZEPPELIN_VERSION,
-      }
-    );
+      contractName,
+    })
+  );
 
-    dispatch(setCompilerReady({ files }));
-  } catch (e) {
-    console.log(e);
-    enqueSnackbar({
-      message: "Error downloading dependencies",
-      options: {
-        variant: "error",
-      },
-    });
-    return;
-  }
-
-  // Compile the contract
-  try {
-    const output = await compiler.compile(files);
-    dispatch(
-      completeCompilation({
-        value: output,
-        sourceName,
-        contractName,
-      })
-    );
-  } catch (e) {
-    console.log(e);
-    enqueSnackbar({
-      message: "Error compiling contract",
-      options: {
-        variant: "error",
-      },
-    });
-    return;
-  }
+  return { contracts: output.contracts, sourceName, contractName, files };
 };
 
-const saveContractData = async ({ dispatch, getState, signer }: any) => {
+const saveContractData = async ({
+  dispatch,
+  getState,
+  signer,
+  values,
+}: any) => {
   const state = getState();
-  const { contract } = state;
+  const { contract, enqueueSnackbar } = state;
   const { sourceName, contractName, contracts } = state.compiler;
   const mainContract = contracts[sourceName][contractName];
   const {
@@ -136,15 +111,48 @@ const saveContractData = async ({ dispatch, getState, signer }: any) => {
   await saveCollectionRequest(metadataFile);
 };
 
-const initiateDeploymentTransaction = async ({
+export interface EtherscanRequest {
+  apikey: string;
+  module: "contract";
+  action: string;
+}
+
+export interface EtherscanVerifyRequest extends EtherscanRequest {
+  action: "verify";
+  contractaddress: string;
+  sourceCode: string;
+  codeformat: "solidity-standard-json-input";
+  contractname: string;
+  compilerversion: string;
+  // This is misspelt in Etherscan's actual API parameters.
+  // See: https://etherscan.io/apis#contracts
+  constructorArguements: string;
+}
+
+export const VERIFY_URL =
+  "https://blockscout.com/poa/sokol/api?module=contract&action=verify";
+
+const createDeploymentTransaction = async ({
   dispatch,
   getState,
   signer,
+  values,
+  compiler,
 }: any) => {
   const state = getState();
-  const { enqueSnackbar } = state;
-  const { sourceName, contractName, contracts } = state.compiler;
+  const { enqueueSnackbar } = state;
+  values.contract.tokenURI = state.contract.tokenURI;
+
+  const { contractName, sourceName, contracts, files } = await prepareContract({
+    dispatch,
+    compiler,
+    getState,
+    values,
+  });
+  console.log("values");
+  console.log(values);
   const mainContract = contracts[sourceName][contractName];
+
   const {
     abi,
     evm: { bytecode },
@@ -152,19 +160,103 @@ const initiateDeploymentTransaction = async ({
 
   dispatch(contractDeploying());
 
+  const factory = new ContractFactory(abi, bytecode, signer);
+  console.log(state.contract.tokenURI);
+  const contract = await factory.deploy(`${state.contract.tokenURI}/{tokenId}`);
+  await contract.deployed();
+  dispatch(contractDeployed({ address: contract.address }));
+
+  const contractInterface = new Interface(
+    contracts[sourceName][contractName].abi
+  );
+
+  console.log(contractInterface);
+
+  const deployArguments = contractInterface
+    .encodeDeploy([getBaseURI(`${state.contract.tokenURI}/{tokenId}`)])
+    .replace("0x", "");
+
+  console.log(JSON.stringify(createCompilerInput(files)));
+  console.log(contractName);
+  const verificationRequest = {
+    module: "contract",
+    action: "verifysourcecode",
+    codeformat: "solidity-standard-json-input",
+    contractaddress: contract.address,
+    contractname: contractName,
+    compilerversion: COMPILER_VERSION,
+    sourceCode: createCompilerInput(files),
+    optimizationUsed: "1",
+  };
+
+  const formData = new FormData();
+
+  formData.append("address_hash", contract.address);
+  formData.append("verification_type", "json:standard");
+  formData.append("smart_contract[address_hash]", contract.address);
+  formData.append("smart_contract[name]", contractName);
+  formData.append("smart_contract[nightly_builds]", "false");
+  formData.append("smart_contract[autodetect_constructor_args]", "true");
+
+  formData.append(
+    "smart_contract[compiler_version]",
+    "v0.8.18+commit.87f61d96"
+  );
+  const blob = new Blob([JSON.stringify(createCompilerInput(files))], {
+    type: "application/json",
+  });
+
+  formData.append("file", blob);
+
+  console.log(verificationRequest);
+  console.log(verificationRequest);
+
+  const res = await axios.post(
+    "https://explorer.testnet.mantle.xyz/verify_smart_contract/contract_verifications",
+    formData,
+    {}
+  );
+  console.log("----------res.data----------");
+  console.log(res);
+  console.log("----------res.data----------");
+  console.log(res.data);
+  console.log("----------res.data----------");
+
+  const parameters = new URLSearchParams(JSON.stringify(verificationRequest));
+
+  const requestDetails = {
+    method: "post",
+    body: parameters,
+  };
+
+  console.log(requestDetails);
+  let response: Response;
   try {
-    const factory = new ContractFactory(abi, bytecode, signer);
+    response = await fetch(VERIFY_URL, requestDetails);
+    console.log(response);
+  } catch (error) {
+    console.error("Failed to validate");
+    return error as Error;
+  }
 
-    const contract = await factory.deploy(state.contract.tokenURI);
-    await contract.deployed();
+  if (!response.ok) {
+    const responseText = await response.text();
 
-    dispatch(contractDeployed({ address: contract.address }));
-  } catch (e) {
-    dispatch(contractDeployError({ error: e }));
-    enqueSnackbar("Error deploying contract please try again", {
+    return new Error(`Error: HTTP request failed. ${responseText}`);
+  }
+
+  const json = await response.json();
+
+  if (json.status === "0") {
+    enqueueSnackbar("Error verifying contract please try again", {
       variant: "error",
     });
+    return new Error(`Error: ${json.result}`);
   }
+
+  enqueueSnackbar("Contract verified successfully", {
+    variant: "success",
+  });
 };
 
 export const loadCollection = async ({
@@ -187,7 +279,7 @@ export const uploadImage = async ({
   getState: any;
 }) => {
   const state = getState();
-  const { enqueSnackbar } = state;
+  const { enqueueSnackbar } = state;
   try {
     const formData = new FormData();
     Object.keys(images).forEach((key) => {
@@ -199,13 +291,23 @@ export const uploadImage = async ({
     dispatch(addImage(response.data));
   } catch (e) {
     console.error(e);
-    enqueSnackbar("Error uploading collection image please try again", {
+    enqueueSnackbar("Error uploading collection image please try again", {
       variant: "error",
     });
   }
 };
 
-const handleMetadata = async ({ dispatch, getState, collectionType }: any) => {
+const handleMetadata = async ({
+  dispatch,
+  getState,
+  collectionType,
+  statex,
+}: any) => {
+  console.log("---------------state2---------------");
+  const state = getState();
+  console.log(state);
+  console.log("---------------statex---------------");
+  console.log(statex);
   if (collectionType === CollectionType.BaseURIProvided) {
     await createMetadataTokenURIProvided({
       dispatch,
@@ -262,11 +364,28 @@ export const deployContract = async ({
   signer,
   values,
   compiler,
+  statex,
   collectionType,
 }: any) => {
+  console.log("------------values------------");
+  console.log(values);
+  console.log("------------state deploy------------");
+  const state = getState();
+  console.log(state);
+
   dispatch(submitContractValues(values));
-  await handleMetadata({ dispatch, getState, collectionType });
-  await prepareContract({ dispatch, compiler, getState });
-  await initiateDeploymentTransaction({ dispatch, getState, provider, signer });
+  console.log("------------state deploy submit------------");
+  console.log(state);
+
+  await handleMetadata({ dispatch, getState, collectionType, values });
+
+  await createDeploymentTransaction({
+    dispatch,
+    getState,
+    provider,
+    signer,
+    values,
+    compiler,
+  });
   await saveContractData({ dispatch, getState, signer });
 };

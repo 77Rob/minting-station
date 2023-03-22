@@ -1,57 +1,57 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useSigner, useProvider, useContract } from "wagmi";
-import { Contract } from "ethers";
+import { Contract, Signer } from "ethers";
 
-export default function useLoadSmartContract({
+export default function useLoadCollection({
   contractAddress,
 }: {
   contractAddress: string | undefined | string[];
 }) {
-  const [contractDataServer, setContractDataServer] = useState<any>(null);
-  //   const [signerS, setSignerS] = useState<any>(null);
-
+  const [contractData, setContractData] = useState<any>(undefined);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [contractExists, setContractExists] = useState<boolean | undefined>(
+    undefined
+  );
   const signer = useSigner();
 
   useEffect(() => {
     const loadContractData = async () => {
-      console.log(contractAddress);
       if (typeof contractAddress == "string") {
-        console.log(contractAddress);
-        const contractABI = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/collection/abi/${contractAddress}`,
+        const contractDataRequest = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/collection/${contractAddress}`,
           {
             params: {
               contractAddress: contractAddress,
             },
           }
         );
-        setContractDataServer(contractABI.data);
+        if (contractDataRequest.data === undefined) {
+          setContractExists(false);
+        } else {
+          setContractExists(true);
+        }
+        setContractData(contractDataRequest.data);
+        setLoading(false);
       }
     };
     loadContractData();
   }, [contractAddress]);
 
   const contract = useMemo(() => {
-    if (!(typeof contractAddress == "string")) {
-      return;
+    if (!loading && contractExists) {
+      return new Contract(
+        contractAddress as string,
+        contractData.abi,
+        signer as unknown as Signer
+      );
     }
-    if (!contractDataServer) {
-      return;
-    }
-    if (signer === null) {
-      return;
-    }
-    if (signer === undefined) {
-      return;
-    }
-    if (signer.isSuccess == false) {
-    }
-    return new Contract(contractAddress, contractDataServer.abi, signer);
-  }, [contractDataServer]);
+  }, [contractData]);
 
   return {
     contract,
-    contractDataServer,
+    contractData,
+    loading,
+    contractExists,
   };
 }

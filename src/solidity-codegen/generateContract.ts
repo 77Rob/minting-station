@@ -1,4 +1,3 @@
-import { ContractState } from "@/store/reducers/contractReducer";
 import { generateActivation } from "./generate/activation";
 import { generateAllowlist } from "./generate/allowlist";
 import { generateImports } from "./generate/imports";
@@ -55,7 +54,7 @@ export function getValidContractName(name: string) {
   return nameWithValidChars;
 }
 
-export function generateContractSource(config: ContractState) {
+export function generateContractSource(config: any) {
   const { tokenName, ticker, price } = config;
 
   const priceValue = Number(price);
@@ -80,7 +79,7 @@ export function generateContractSource(config: ContractState) {
 
   const program: AST.Program = {
     license: "MIT",
-    pragma: { value: "solidity ^0.8.9" },
+    pragma: { value: "solidity ^0.8.18" },
     imports: generateImports({
       address: hasWithdraw,
       enumerable: config.enumerable,
@@ -193,14 +192,14 @@ export function generateContractSource(config: ContractState) {
                   }),
                 }),
               ...config.allowlistDestinations
-                .filter((dest) => dest.amount > 0)
-                .map((dest) =>
+                .filter((destination: any) => destination.amount > 0)
+                .map((destination: any) =>
                   expressionStatement({
                     expression: assignmentExpression({
                       lhs: identifierExpression(
-                        `allowedMintCountMap[${dest.address}]`
+                        `allowedMintCountMap[${destination.address}]`
                       ),
-                      rhs: literalExpression(dest.amount),
+                      rhs: literalExpression(destination.amount),
                     }),
                   })
                 ),
@@ -243,10 +242,6 @@ export function generateContractSource(config: ContractState) {
             : []),
         ],
       },
-      blockComment({
-        value: "",
-        commentType: "//",
-      }),
     ],
   };
 

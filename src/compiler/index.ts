@@ -1,14 +1,27 @@
-import {
-  SolidityCompiler,
-  SolidityCompilerModule,
-  CompilerInput,
-  CompilerOutput,
-} from "@/types/compiler.dto";
-import {
-  SolidityCompilerOutput,
-  WorkerRequest,
-  WorkerResponse,
-} from "@/types/worker.dto";
+import { CompilerInput, CompilerOutput } from "hardhat/types";
+
+export type { CompilerInput, CompilerOutput };
+
+export interface SolidityCompilerModule {
+  cwrap: Function;
+}
+export type WorkerCommand = {
+  id: number;
+  type: "compile";
+  request: {
+    input: CompilerInput;
+  };
+  response: {
+    output: SolidityCompilerOutput;
+  };
+};
+export interface SolidityCompiler {
+  version: string;
+  compile(input: CompilerInput): CompilerOutput;
+}
+export type WorkerRequest = Pick<WorkerCommand, "id" | "type" | "request">;
+export type WorkerResponse = Pick<WorkerCommand, "id" | "type" | "response">;
+export type SolidityCompilerOutput = { errors: any[] } | CompilerOutput;
 
 import fetch from "cross-fetch";
 import { useEffect, useRef } from "react";

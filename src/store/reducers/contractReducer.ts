@@ -173,7 +173,11 @@ const contractSlice = createSlice({
       state.status = action.payload;
     },
     submitContractValues: (state: any, action: any) => {
+      console.log("state.contract");
+      console.log(state);
+      console.log(state.contract);
       state.contract = action.payload;
+      console.log(state.contract);
     },
     loadingCompiler: (state: any) => {
       state.status = DeploymentStatus.LoadingCompiler;
