@@ -203,10 +203,11 @@ const contractSlice = createSlice({
       state.contract.image = action.payload;
     },
     setContractURI: (state: any, action: any) => {
-      state.contract.contractURI = action.payload.contractURI;
+      console.log(action.payload);
+      state.contract.contractURI = action.payload;
       state.status = DeploymentStatus.GeneratingMetadata;
       state.deploymentActionsCompleted.push([
-        { name: "ContractURI Ready", value: action.payload.contractURI },
+        { name: "ContractURI Ready", value: action.payload },
       ]);
     },
     setCompilerReady: (state, action) => {
