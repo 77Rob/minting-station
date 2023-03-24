@@ -1,12 +1,10 @@
-import { WorkerRequest, WorkerResponse } from "@/types/worker.dto";
-
 import { getCompiler } from "@/compiler";
 
 const compilerPromise = getCompiler();
 
 // eslint-disable-next-line no-restricted-globals
 addEventListener("message", async (event) => {
-  const request = event.data as WorkerRequest;
+  const request = event.data;
 
   switch (request.type) {
     case "compile": {
@@ -14,7 +12,7 @@ addEventListener("message", async (event) => {
 
       const output = compiler.compile(request.request.input);
 
-      const response: WorkerResponse = {
+      const response = {
         id: request.id,
         type: request.type,
         response: { output },

@@ -4,7 +4,7 @@ import SwitchField from "@/components/SwitchField";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
   deleteCollectionImage,
-  deployContract,
+  // deployContract,
   loadCollectionSettings,
 } from "@/store/utils/contracts";
 import {
@@ -24,6 +24,10 @@ import { withFramerMotion } from "./withFramerMotion";
 import { useSnackbar } from "notistack";
 import UploadCollectionImage from "./UploadCollectionImage";
 import { TrashIcon } from "@heroicons/react/24/solid";
+import {
+  createDeploymentTransaction,
+  handleMetadata,
+} from "../store/utils/contracts";
 
 type ContractSettingsProps = {
   collectionType: CollectionType;
@@ -58,15 +62,18 @@ const ContractSettings = ({ collectionType }: ContractSettingsProps) => {
         onSubmit={async (values: any, actions) => {
           setShowDeploymentModal(true);
           dispatch(submitContractValues(values));
-          await deployContract({
+          console.log("state");
+          console.log(state);
+          await handleMetadata({ dispatch, state, collectionType, values });
+          console.log("state");
+          console.log(state);
+          await createDeploymentTransaction({
             dispatch,
-            statex: state,
-            getState,
-            compiler,
-            values,
-            signer,
+            state,
             provider,
-            collectionType,
+            signer,
+            values,
+            compiler,
           });
         }}
       >
