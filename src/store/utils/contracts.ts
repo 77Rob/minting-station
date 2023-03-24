@@ -42,15 +42,14 @@ export const OPEN_ZEPPELIN_VERSION = "4.8.0";
 export const prepareContract = async ({
   dispatch,
   compiler,
-  getState,
+  state,
   values,
 }: {
   dispatch: AppDispatch;
   compiler: any;
-  getState: any;
+  state: any;
   values: any;
 }) => {
-  const state = getState();
   const { contract, enqueueSnackbar } = state;
   let contractName;
   let sourceName;
@@ -102,24 +101,22 @@ export interface EtherscanVerifyRequest extends EtherscanRequest {
 export const VERIFY_URL =
   "https://blockscout.com/poa/sokol/api?module=contract&action=verify";
 
-const createDeploymentTransaction = async ({
+export const createDeploymentTransaction = async ({
   dispatch,
-  getState,
+  state,
   signer,
   values,
   compiler,
 }: any) => {
-  const state = getState();
   const { enqueueSnackbar } = state;
   let valuesCopy = { ...values };
   valuesCopy.tokenURI = state.contract.tokenURI;
   valuesCopy.contractURI = state.contract.contractURI;
   valuesCopy.image = state.contract.image;
-
   const { contractName, sourceName, contracts, files } = await prepareContract({
     dispatch,
     compiler,
-    getState,
+    state,
     values: valuesCopy,
   });
 
@@ -143,6 +140,7 @@ const createDeploymentTransaction = async ({
     contracts[sourceName][contractName].abi
   );
   console.log(JSON.stringify(createCompilerInput(files)));
+
   const collectionData = {
     name: valuesCopy.tokenName,
     description: valuesCopy.description,
@@ -215,37 +213,40 @@ export const deleteCollectionImage = async ({
   await deleteCollectionImageRequest();
   dispatch(removeCollectionImage());
 };
-const handleMetadata = async ({ dispatch, getState, collectionType }: any) => {
+export const handleMetadata = async ({
+  dispatch,
+  state,
+  collectionType,
+}: any) => {
   if (collectionType === CollectionType.BaseURIProvided) {
     await createMetadataTokenURIProvided({
       dispatch,
-      getState,
+      state,
     });
   }
 
   if (collectionType == CollectionType.ImagesProvided) {
     await createMetadataImagesProvided({
       dispatch,
-      getState,
+      state,
     });
   }
 
   if (collectionType == CollectionType.AiGenerated) {
     await createMetadataAiGeneratedImages({
       dispatch,
-      getState,
+      state,
     });
   }
 };
 
 export const createMetadataTokenURIProvided = async ({
   dispatch,
-  getState,
+  state,
 }: {
   dispatch: AppDispatch;
-  getState: any;
+  state: any;
 }) => {
-  const state = getState();
   const { contract, enqueueSnackbar } = state;
   dispatch(setStatus(DeploymentStatus.GeneratingContractURI));
   try {
@@ -267,19 +268,18 @@ export const createMetadataTokenURIProvided = async ({
 
 export const deployContract = async ({
   dispatch,
-  getState,
+  state,
   provider,
   signer,
   values,
   compiler,
   collectionType,
 }: any) => {
-  const state = getState();
   dispatch(submitContractValues(values));
-  await handleMetadata({ dispatch, getState, collectionType, values });
+  await handleMetadata({ dispatch, state, collectionType, values });
   await createDeploymentTransaction({
     dispatch,
-    getState,
+    state,
     provider,
     signer,
     values,

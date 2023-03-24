@@ -102,8 +102,7 @@ export function generateURIHandling(
       config.tokenParameters.length === 0);
 
   return [
-    blockComment({ value: "URI HANDLING", commentType: "/*" }),
-    ...(config.contractURI ? generateContractURI(config.contractURI) : []),
+    ...generateContractURI(config.contractURI),
     ...(!config.usesDelegatedContract
       ? [parseVariableDeclaration("string private customBaseURI")]
       : []),

@@ -143,12 +143,11 @@ const generateImagesAi = async ({
 
 const handleCreateAndUploadMetadata = async ({
   dispatch,
-  getState,
+  state,
 }: {
   dispatch: AppDispatch;
-  getState: any;
+  state: any;
 }) => {
-  const state = getState();
   const { contract, enqueueSnackbar } = state;
 
   dispatch(generatingContractURI());
@@ -183,17 +182,14 @@ const handleCreateAndUploadMetadata = async ({
   }
 };
 
-const handleUploadMetadataAi = async ({
-  dispatch,
-  getState,
-}: ThunkActionProps) => {
+const handleUploadMetadataAi = async ({ dispatch, state }: any) => {
   dispatch(generatingContractURI());
 
-  const state = getState();
   const { contract, enqueueSnackbar } = state;
-
+  let contractURIRequest: any;
+  let metadataURIRequest: any;
   try {
-    const contractURIRequest = await generateContractUriRequest({
+    contractURIRequest = await generateContractUriRequest({
       name: contract.tokenName,
       description: contract.description,
       image: contract.image,
@@ -220,6 +216,7 @@ const handleUploadMetadataAi = async ({
       variant: "error",
     });
   }
+  return [contractURIRequest.data, metadataURIRequest.data];
 };
 
 export {
