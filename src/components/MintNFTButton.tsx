@@ -18,7 +18,7 @@ const MintNFTButton = ({ contractAddress }: Props) => {
       const signer = provider.getSigner();
       const contract = new ethers.Contract(
         contractAddress,
-        ["function mint() public payable returns (uint256)"],
+        ["function mint() public returns (uint256)"],
         signer
       );
 

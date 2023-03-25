@@ -6,11 +6,11 @@
 
 # Backend Service
 
-[https://github.com/77Rob/minting-station-server](Backend Service URL NestJS Project)
+[Backend Service URL NestJS Project](https://github.com/77Rob/minting-station-server)
 
 ### Figma URL if you want to see the design drafts
 
-[https://www.figma.com/file/87VvbM6O4dXp6A5IUbK3XM/Craft-Station-(Copy)?node-id=0%3A1&t=aguaJhuGjs0TmW7D-1](Figma)
+[Figma](<https://www.figma.com/file/87VvbM6O4dXp6A5IUbK3XM/Craft-Station-(Copy)?node-id=0%3A1&t=aguaJhuGjs0TmW7D-1>)
 
 # Minting Station
 

@@ -5,6 +5,7 @@ import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/solid";
 import Button from "@/components/Button";
 import { Spinner } from "flowbite-react";
 import { parseEther, parseUnits } from "ethers/lib/utils.js";
+import { ethers } from "ethers";
 
 const MintingPage = () => {
   const router = useRouter();
@@ -35,6 +36,29 @@ const MintingPage = () => {
       </div>
     );
   }
+
+  const handleMint = async () => {
+    try {
+      const provider = new ethers.providers.Web3Provider(
+        window.ethereum as any
+      );
+      const signer = provider.getSigner();
+      const contract = new ethers.Contract(
+        contractAddress as string,
+        ["function mint() public returns (uint256)"],
+        signer
+      );
+
+      const tx = await contract.mint();
+
+      await tx.wait();
+
+      alert("NFT minted successfully!");
+    } catch (error) {
+      console.error(error);
+      alert("Failed to mint NFT");
+    }
+  };
 
   return (
     <div className="flex flex-col justify-center max-w-md py-2 mx-auto space-y-2 ">
@@ -83,7 +107,10 @@ const MintingPage = () => {
           <h1>{data?.owner}</h1>
         </div>
       </div>
-      <Button className="btn-primary  text-lg font-semibold">
+      <Button
+        onClick={handleMint}
+        className="btn-primary  text-lg font-semibold"
+      >
         Mint Price: {!(data?.price == "0") ? `${data?.price} BIT` : "Free"}
       </Button>
     </div>
