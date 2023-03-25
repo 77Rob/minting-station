@@ -49,7 +49,6 @@ const DeploymentModal = ({ setOpen, open }: any) => {
                   className="text-primary font-bold"
                   href={`https://explorer.testnet.mantle.xyz/address/${state.deploymentAddress}`}
                 >
-                  {"    "}
                   {state.deploymentAddress}
                 </Link>
               </h1>

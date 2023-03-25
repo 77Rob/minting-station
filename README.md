@@ -1,4 +1,32 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Minting Station
+
+Creating and deploying NFT smart contracts can be a daunting task for people with no coding skills. Additionally, generating art for NFTs can be a challenge even for experienced artists. This project aims to solve these problems by providing an easy-to-use platform that allows users to create art for NFTs and generate and deploy NFT smart contracts without any coding knowledge.
+
+## The platform allows users to create NFTs in four ways:
+
+- Upload Images: Users can upload their own images to use as the basis for their NFTs.
+- AI-Generated Images: Users can generate unique images for their NFTs by prompting an AI algorithm.
+- Base URI for Metadata: Users can provide a base URI for the metadata associated with their NFTs.
+- Combined Traits: Users can combine multiple traits to generate unique images for their NFTs.
+
+The project consists of two repositories:
+
+- NextJS project for the front-end (This repository)
+- NestJS project for the back-end
+
+## Enviroment Variables
+
+NEXT_PUBLIC_API_URL - BACKEND SERVICE API URL
+
+## TechStack
+
+- Redux
+- NestJS
+- Firebase Storage
+- Web3Storage
+- NextJS
+- TailWindCss
+- EthersJS
 
 ## Composability and Reusability
 
@@ -87,3 +115,5 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).

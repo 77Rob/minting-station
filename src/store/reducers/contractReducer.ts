@@ -189,7 +189,7 @@ const contractSlice = createSlice({
       state.status = DeploymentStatus.GeneratingContractURI;
     },
     setTokenURI: (state: any, action) => {
-      state.contract.tokenURI = action.payload;
+      state.contract.tokenURI = `${action.payload}/{tokenId}`;
       state.deploymentActionsCompleted.push([
         { name: "TokenURI Ready", value: action.payload },
       ]);
