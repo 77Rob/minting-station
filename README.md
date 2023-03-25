@@ -1,5 +1,9 @@
 ![Animation](animation.gif)
 
+# Deployment
+
+[https://mintingstation-fawyrbpn4-777rob.vercel.app/](Try it out)
+
 # Backend Service
 
 [https://github.com/77Rob/minting-station-server](Backend Service URL NestJS Project)
