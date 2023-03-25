@@ -18,8 +18,10 @@ export default function Home() {
           No code Toolkit for NFT CREATORS
         </h1>
         <p className="text-lg mx-auto my-4 max-w-2xl">
-          Create your own AWESOME NFT’s in as little as 3 minutes and share your
-          collection with the world !!!!
+          Welcome to easy-to-use platform that allows users to create art for
+          NFTs and generate and deploy NFT smart contracts without any coding
+          knowledge. Create your own NFT collection in as little as 3 minutes
+          and share your collection with the world !!!!
         </p>
         <Link href="/create">
           <Button>BEGIN</Button>
