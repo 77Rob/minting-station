@@ -50,6 +50,7 @@ export const prepareContract = async ({
   state: any;
   values: any;
 }) => {
+  console.log("prepareContract");
   const { contract, enqueueSnackbar } = state;
   let contractName;
   let sourceName;
@@ -113,12 +114,14 @@ export const createDeploymentTransaction = async ({
   valuesCopy.tokenURI = state.contract.tokenURI;
   valuesCopy.contractURI = state.contract.contractURI;
   valuesCopy.image = state.contract.image;
+  console.log("Preparing contract+");
   const { contractName, sourceName, contracts, files } = await prepareContract({
     dispatch,
     compiler,
     state,
     values: valuesCopy,
   });
+  console.log(files);
 
   const mainContract = contracts[sourceName][contractName];
 

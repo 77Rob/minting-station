@@ -42,6 +42,78 @@ NEXT_PUBLIC_API_URL - BACKEND SERVICE API URL
 - TailWindCss
 - EthersJS
 
+## Generated contract
+
+```sol
+// SPDX-License-Identifier: MIT
+
+pragma solidity ^0.8.18;
+
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+
+contract MyCollectionName is ERC721, ReentrancyGuard, Ownable {
+  using Counters for Counters.Counter;
+
+  constructor(string memory customBaseURI_) ERC721("My Collection Name", "MCN")
+  {
+    customBaseURI = customBaseURI_;
+  }
+
+  uint256 public constant MAX_SUPPLY = 100;
+
+  Counters.Counter private supplyCounter;
+
+  function mint() public nonReentrant {
+    require(saleIsActive, "Sale not active");
+
+    require(totalSupply() < MAX_SUPPLY, "Exceeds max supply");
+
+    _mint(msg.sender, totalSupply());
+
+    supplyCounter.increment();
+  }
+
+  function totalSupply() public view returns (uint256) {
+    return supplyCounter.current();
+  }
+
+  bool public saleIsActive = true;
+
+  function setSaleIsActive(bool saleIsActive_) external onlyOwner {
+    saleIsActive = saleIsActive_;
+  }
+
+  string private customContractURI = "https://w3s.link/ipfs/bafybeib52zabkd5d3kcxtd3xfetjyquiytbd32wgaiw2dngsuhacdgc7nu/favicon";
+
+  function setContractURI(string memory customContractURI_) external onlyOwner {
+    customContractURI = customContractURI_;
+  }
+
+  function contractURI() public view returns (string memory) {
+    return customContractURI;
+  }
+
+  string private customBaseURI;
+
+  function setBaseURI(string memory customBaseURI_) external onlyOwner {
+    customBaseURI = customBaseURI_;
+  }
+
+  function _baseURI() internal view virtual override returns (string memory) {
+    return customBaseURI;
+  }
+
+  function tokenURI(uint256 tokenId) public view override
+    returns (string memory)
+  {
+    return string(abi.encodePacked());
+  }
+}
+```
+
 ## Composability and Reusability
 
 In this project Smart Contract deployment is completely sperated from the art and metadata creation. It means that it is very easy to add new ways of generating metadata without changing Smart Contract creation logic. Smart contract deployment is compeltely controlled by the

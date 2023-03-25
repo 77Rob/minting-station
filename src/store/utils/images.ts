@@ -187,7 +187,7 @@ const handleUploadMetadataAi = async ({ dispatch, state }: any) => {
 
   const { contract, enqueueSnackbar } = state;
   let contractURIRequest: any;
-  let metadataURIRequest: any;
+
   try {
     contractURIRequest = await generateContractUriRequest({
       name: contract.tokenName,
@@ -216,7 +216,6 @@ const handleUploadMetadataAi = async ({ dispatch, state }: any) => {
       variant: "error",
     });
   }
-  return [contractURIRequest.data, metadataURIRequest.data];
 };
 
 export {

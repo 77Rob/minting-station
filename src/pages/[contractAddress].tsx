@@ -6,6 +6,7 @@ import Button from "@/components/Button";
 import { Spinner } from "flowbite-react";
 import { parseEther, parseUnits } from "ethers/lib/utils.js";
 import { ethers } from "ethers";
+import Link from "next/link";
 
 const MintingPage = () => {
   const router = useRouter();
@@ -90,9 +91,15 @@ const MintingPage = () => {
         <div className="flex justify-between items-center">
           <h1 className="text-xl font-bold">{data?.name}</h1>
           <div className="flex items-center gap-x-2">
-            <Button className="p-1 rounded-xl bg-base-200">
-              <img src="/explorer.svg" className="h-6" />
-            </Button>
+            <Link
+              href={`https://explorer.testnet.mantle.xyz/address/${
+                contractAddress as string
+              }`}
+            >
+              <Button className="p-1 rounded-xl bg-base-200">
+                <img src="/explorer.svg" className="h-6" />
+              </Button>
+            </Link>
             <Button className="p-1 rounded-xl bg-base-200">
               <ArrowTopRightOnSquareIcon className="h-6" />
             </Button>

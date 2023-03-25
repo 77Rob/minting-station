@@ -65,8 +65,7 @@ const ContractSettings = ({ collectionType }: ContractSettingsProps) => {
           console.log("state");
           console.log(state);
           await handleMetadata({ dispatch, state, collectionType, values });
-          console.log("state");
-          console.log(state);
+          console.log("Creating deployment transaction");
           await createDeploymentTransaction({
             dispatch,
             state,

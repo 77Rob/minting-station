@@ -190,9 +190,7 @@ const contractSlice = createSlice({
     },
     setTokenURI: (state: any, action) => {
       state.contract.tokenURI = `${action.payload}/{tokenId}`;
-      state.deploymentActionsCompleted.push([
-        { name: "TokenURI Ready", value: action.payload },
-      ]);
+
       state.status = DeploymentStatus.MetadataReady;
     },
     handleLoadCollection(state: any, action) {
@@ -206,9 +204,6 @@ const contractSlice = createSlice({
       console.log(action.payload);
       state.contract.contractURI = action.payload;
       state.status = DeploymentStatus.GeneratingMetadata;
-      state.deploymentActionsCompleted.push([
-        { name: "ContractURI Ready", value: action.payload },
-      ]);
     },
     setCompilerReady: (state, action) => {
       state.status = DeploymentStatus.CompilerReady;
