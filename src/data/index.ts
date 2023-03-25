@@ -1,13 +1,13 @@
 import { OptionCardProps } from "@/components/OptionCard";
 
 export const options: OptionCardProps[] = [
-  {
-    name: "GENERATIVE WITH TRAITS",
-    description:
-      "Generate NFT collection by providing and combining set of traits like body, hat, accessory etc. and deploy custom smart contract using these images",
-    image: "/traits.svg",
-    href: "/create/traits",
-  },
+  // {
+  //   name: "GENERATIVE WITH TRAITS",
+  //   description:
+  //     "Generate NFT collection by providing and combining set of traits like body, hat, accessory etc. and deploy custom smart contract using these images",
+  //   image: "/traits.svg",
+  //   href: "/create/traits",
+  // },
   {
     name: "Provide images",
     description:
