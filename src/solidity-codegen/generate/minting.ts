@@ -1,4 +1,3 @@
-import { ContractState } from "@/store/reducers/contractReducer";
 import { ContractContext } from "..";
 import {
   assignmentExpression,
@@ -20,10 +19,7 @@ import {
 } from "@/solidity-language";
 
 export function generateMinting(
-  config: Omit<
-    ContractState,
-    "activateAutomatically" | "tokenURI" | "usesUriStorage"
-  >,
+  config: Omit<any, "activateAutomatically" | "tokenURI" | "usesUriStorage">,
   context: ContractContext
 ): (AST.Declaration | AST.BlockComment)[] {
   const {

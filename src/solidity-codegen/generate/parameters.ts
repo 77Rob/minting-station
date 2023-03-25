@@ -1,4 +1,3 @@
-import { ContractState } from "@/store/reducers/contractReducer";
 import {
   AST,
   blockComment,
@@ -9,13 +8,13 @@ import {
 } from "@/solidity-language";
 
 export function generateTokenParameters(
-  config: Pick<ContractState, "tokenParameters">
+  config: Pick<any, "tokenParameters">
 ): (AST.Declaration | AST.BlockComment)[] {
   return [
     blockComment({ value: "TOKEN PARAMETERS", commentType: "/*" }),
     structDeclaration({
       name: "TokenParameters",
-      body: config.tokenParameters.map((parameter) =>
+      body: config.tokenParameters.map((parameter: any) =>
         structMemberDeclaration({
           name: parameter.name,
           typeAnnotation: parameter.type,

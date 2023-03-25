@@ -1,4 +1,3 @@
-import { ContractState } from "@/store/reducers/contractReducer";
 import {
   assignmentExpression,
   AST,
@@ -80,7 +79,7 @@ function generateContractURI(uri: string) {
 
 export function generateURIHandling(
   config: Pick<
-    ContractState,
+    any,
     | "tokenParameters"
     | "tokenURI"
     | "usesUriStorage"
@@ -284,7 +283,7 @@ export function generateURIHandling(
                                           identifierExpression('"?"'),
                                           ...intersperse(
                                             config.tokenParameters.flatMap(
-                                              (parameter) => [
+                                              (parameter: any) => [
                                                 identifierExpression(
                                                   `"${parameter.name}="`
                                                 ),
