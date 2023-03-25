@@ -1,3 +1,5 @@
+![Animation](animation.gif)
+
 # Minting Station
 
 Creating and deploying NFT smart contracts can be a daunting task for people with no coding skills. Additionally, generating art for NFTs can be a challenge even for experienced artists. This project aims to solve these problems by providing an easy-to-use platform that allows users to create art for NFTs and generate and deploy NFT smart contracts without any coding knowledge.
