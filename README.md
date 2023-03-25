@@ -1,5 +1,13 @@
 ![Animation](animation.gif)
 
+# Backend Service
+
+[https://github.com/77Rob/minting-station-server](Backend Service URL NestJS Project)
+
+### Figma URL if you want to see the design drafts
+
+[https://www.figma.com/file/87VvbM6O4dXp6A5IUbK3XM/Craft-Station-(Copy)?node-id=0%3A1&t=aguaJhuGjs0TmW7D-1](Figma)
+
 # Minting Station
 
 Creating and deploying NFT smart contracts can be a daunting task for people with no coding skills. Additionally, generating art for NFTs can be a challenge even for experienced artists. This project aims to solve these problems by providing an easy-to-use platform that allows users to create art for NFTs and generate and deploy NFT smart contracts without any coding knowledge.
